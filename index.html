@@ -299,7 +299,140 @@
     .detail-actions .btn {
       background: rgba(255,255,255,.12); border: 1px solid rgba(255,255,255,.22); color: #f7f4ee;
     }
-    .detail-actions .btn.on { background: var(--gold); color: #1a1608; border-color: var(--gold); }
+    .detail-actions .btn-cook {
+      background: var(--gold); color: #1a1608; border-color: var(--gold);
+    }
+    .detail-actions .btn-shop {
+      background: rgba(255,255,255,.92); color: var(--brand); border-color: transparent;
+    }
+
+    /* Shop sheet */
+    .sheet-backdrop {
+      position: fixed; inset: 0; z-index: 80;
+      background: rgba(10, 16, 12, .55);
+      backdrop-filter: blur(4px);
+      display: grid; align-items: end; justify-items: center;
+      padding: 1rem; padding-bottom: calc(1rem + var(--safe-b));
+      animation: fadeUp .25s ease both;
+    }
+    .sheet {
+      width: min(560px, 100%);
+      max-height: min(88dvh, 760px);
+      overflow: auto;
+      background: #f7f5f0;
+      border-radius: 24px;
+      box-shadow: var(--shadow);
+      padding: 1.25rem 1.25rem 1.4rem;
+    }
+    .sheet-head {
+      display: flex; align-items: start; justify-content: space-between; gap: 1rem;
+      margin-bottom: 1rem;
+    }
+    .sheet-head h2 {
+      font-family: var(--font-display); font-size: 1.45rem;
+      margin: 0; color: var(--brand); line-height: 1.15;
+    }
+    .sheet-head p { margin: .3rem 0 0; color: var(--muted); font-size: .92rem; }
+    .sheet-close {
+      width: 40px; height: 40px; border-radius: 50%;
+      border: 1px solid var(--line); background: #fff; flex-shrink: 0;
+      font-size: 1.2rem; line-height: 1;
+    }
+    .servings-row {
+      display: flex; flex-wrap: wrap; align-items: center; gap: .55rem;
+      margin-bottom: 1rem; padding: .85rem 1rem;
+      background: rgba(255,255,255,.8); border: 1px solid var(--line); border-radius: 16px;
+    }
+    .servings-row label { font-weight: 600; color: var(--brand); margin-right: .25rem; }
+    .servings-row .chip {
+      min-width: 44px; padding: .45rem .7rem; border-radius: 999px;
+      border: 1px solid var(--line); background: #fff; font-weight: 600;
+    }
+    .servings-row .chip.active {
+      background: var(--brand); color: #fff; border-color: var(--brand);
+    }
+    .servings-row .base-note { width: 100%; font-size: .82rem; color: var(--muted); }
+    .shop-list { list-style: none; padding: 0; margin: 0 0 1rem; display: grid; gap: .45rem; }
+    .shop-list li {
+      display: grid; grid-template-columns: 22px 1fr; gap: .65rem; align-items: start;
+      padding: .7rem .8rem; background: #fff; border: 1px solid var(--line); border-radius: 14px;
+    }
+    .shop-list input { margin-top: .15rem; accent-color: var(--leaf); width: 16px; height: 16px; }
+    .shop-list input:checked + label { text-decoration: line-through; color: var(--muted); }
+    .shop-actions { display: flex; flex-wrap: wrap; gap: .55rem; }
+    .shop-actions .btn {
+      border: 1px solid var(--line); background: #fff; border-radius: 999px;
+      padding: .7rem 1rem; font-weight: 600;
+    }
+    .shop-actions .btn-primary { background: var(--brand); color: #fff; border-color: var(--brand); }
+
+    /* Cook mode */
+    .cook-mode {
+      position: fixed; inset: 0; z-index: 90;
+      background: #101812; color: #f4f1ea;
+      display: flex; flex-direction: column;
+      padding: env(safe-area-inset-top, 0) env(safe-area-inset-right, 0) env(safe-area-inset-bottom, 0) env(safe-area-inset-left, 0);
+      animation: fadeUp .3s ease both;
+    }
+    .cook-top {
+      display: flex; align-items: center; justify-content: space-between; gap: .75rem;
+      padding: .85rem 1rem; border-bottom: 1px solid rgba(255,255,255,.08);
+    }
+    .cook-top h2 {
+      font-family: var(--font-display); font-size: clamp(1.15rem, 4vw, 1.5rem);
+      margin: 0; line-height: 1.15;
+    }
+    .cook-exit {
+      border-radius: 999px; padding: .55rem .95rem;
+      background: rgba(255,255,255,.1); border: 1px solid rgba(255,255,255,.16);
+      font-weight: 600; white-space: nowrap;
+    }
+    .cook-tabs {
+      display: flex; gap: .4rem; padding: .75rem 1rem 0;
+    }
+    .cook-tabs button {
+      flex: 1; padding: .7rem; border-radius: 12px;
+      background: rgba(255,255,255,.06); font-weight: 600; opacity: .7;
+    }
+    .cook-tabs button.active { opacity: 1; background: rgba(196, 163, 90, .22); color: var(--gold-soft); }
+    .cook-body {
+      flex: 1; overflow: auto; padding: 1rem 1.15rem 1.25rem;
+      -webkit-overflow-scrolling: touch;
+    }
+    .cook-progress {
+      font-size: .85rem; letter-spacing: .08em; text-transform: uppercase;
+      color: rgba(244,241,234,.55); margin-bottom: .75rem;
+    }
+    .cook-step {
+      font-size: clamp(1.35rem, 5.2vw, 2rem);
+      line-height: 1.35; font-weight: 500;
+      max-width: 28ch;
+    }
+    .cook-ings { list-style: none; padding: 0; margin: 0; display: grid; gap: .55rem; }
+    .cook-ings li {
+      display: grid; grid-template-columns: 28px 1fr; gap: .75rem; align-items: start;
+      padding: .9rem 1rem; border-radius: 16px;
+      background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.08);
+      font-size: clamp(1.05rem, 3.5vw, 1.25rem);
+    }
+    .cook-ings input { width: 20px; height: 20px; margin-top: .15rem; accent-color: var(--gold); }
+    .cook-ings input:checked + label { opacity: .45; text-decoration: line-through; }
+    .cook-nav {
+      display: grid; grid-template-columns: 1fr 1fr; gap: .65rem;
+      padding: .85rem 1rem calc(.85rem + var(--safe-b));
+      border-top: 1px solid rgba(255,255,255,.08);
+    }
+    .cook-nav button {
+      padding: 1rem; border-radius: 16px; font-size: 1.05rem; font-weight: 700;
+      background: rgba(255,255,255,.1);
+    }
+    .cook-nav .next {
+      background: var(--gold); color: #1a1608;
+    }
+    .cook-nav button:disabled { opacity: .35; }
+    body.cook-open .topbar,
+    body.cook-open .bottom-nav { display: none !important; }
+    body.cook-open main { visibility: hidden; }
 
     .fact {
       margin: 0 0 1.5rem; padding: 1.1rem 1.2rem;
@@ -394,7 +527,7 @@
     }
 
     @media print {
-      .topbar, .bottom-nav, .detail-back, .detail-actions, .heart, .fav-toggle, .install-btn { display: none !important; }
+      .topbar, .bottom-nav, .detail-back, .detail-actions, .heart, .fav-toggle, .install-btn, #overlays { display: none !important; }
       body { background: white; }
       .detail-hero { min-height: 240px; box-shadow: none; }
       .panel { break-inside: avoid; }
@@ -430,6 +563,7 @@
       <section class="view" id="view-browse" aria-label="Browse"></section>
       <section class="view" id="view-recipe" aria-label="Recipe"></section>
     </main>
+    <div id="overlays"></div>
 
     <nav class="bottom-nav" aria-label="Primary">
       <button type="button" data-nav="home" class="active">
@@ -1730,7 +1864,13 @@
       recipeId: null,
       query: "",
       favOnly: false,
-      favorites: new Set(JSON.parse(localStorage.getItem(FAV_KEY) || "[]"))
+      favorites: new Set(JSON.parse(localStorage.getItem(FAV_KEY) || "[]")),
+      shopOpen: false,
+      shopMultiplier: 1,
+      cookOpen: false,
+      cookTab: "steps",
+      cookStep: 0,
+      wakeLock: null
     };
 
     const $ = (sel, el = document) => el.querySelector(sel);
@@ -1745,6 +1885,71 @@
       else state.favorites.add(id);
       saveFavs();
       render();
+    }
+
+    const UNICODE_FRAC = { "¼": 0.25, "½": 0.5, "¾": 0.75, "⅓": 1 / 3, "⅔": 2 / 3, "⅛": 0.125, "⅜": 0.375, "⅝": 0.625, "⅞": 0.875 };
+
+    function formatAmount(n) {
+      if (!Number.isFinite(n) || n <= 0) return String(n);
+      const whole = Math.floor(n + 1e-9);
+      const frac = n - whole;
+      const fracs = [
+        [0, ""], [0.125, "⅛"], [0.25, "¼"], [1 / 3, "⅓"], [0.375, "⅜"],
+        [0.5, "½"], [0.625, "⅝"], [2 / 3, "⅔"], [0.75, "¾"], [0.875, "⅞"]
+      ];
+      let best = "";
+      let bestDiff = 0.04;
+      for (const [v, s] of fracs) {
+        const d = Math.abs(frac - v);
+        if (d < bestDiff) { bestDiff = d; best = s; }
+      }
+      if (best === "" && frac > 0.04) {
+        const rounded = Math.round(n * 100) / 100;
+        return String(rounded);
+      }
+      if (whole === 0) return best || String(Math.round(n * 100) / 100);
+      return best ? `${whole}${best}` : String(whole);
+    }
+
+    function scaleIngredient(text, multiplier) {
+      if (multiplier === 1) return text;
+      return text.replace(/(\d+\s*)?([¼½¾⅓⅔⅛⅜⅝⅞])|(\d+\s+\d+\/\d+)|(\d+\/\d+)|(\d+\.\d+)|(\d+)/g, (match, wholeBeforeUnicode, unicodeFrac, mixed, plainFrac, decimal, integer) => {
+        let value = null;
+        if (unicodeFrac) {
+          value = (wholeBeforeUnicode ? parseFloat(wholeBeforeUnicode) : 0) + UNICODE_FRAC[unicodeFrac];
+        } else if (mixed) {
+          const parts = mixed.trim().split(/\s+/);
+          const [a, b] = parts[1].split("/").map(Number);
+          value = parseFloat(parts[0]) + a / b;
+        } else if (plainFrac) {
+          const [a, b] = plainFrac.split("/").map(Number);
+          value = a / b;
+        } else if (decimal) {
+          value = parseFloat(decimal);
+        } else if (integer) {
+          value = parseFloat(integer);
+        }
+        if (value == null || !Number.isFinite(value)) return match;
+        return formatAmount(value * multiplier);
+      });
+    }
+
+    function baseServings(r) {
+      if (!r.serves) return 4;
+      const m = String(r.serves).match(/(\d+)/);
+      return m ? Number(m[1]) : 4;
+    }
+
+    async function requestWakeLock() {
+      try {
+        if ("wakeLock" in navigator) state.wakeLock = await navigator.wakeLock.request("screen");
+      } catch (_) {}
+    }
+    function releaseWakeLock() {
+      if (state.wakeLock) {
+        state.wakeLock.release().catch(() => {});
+        state.wakeLock = null;
+      }
     }
 
     function filteredRecipes() {
@@ -1874,7 +2079,6 @@
       const r = RECIPES.find(x => x.id === state.recipeId);
       if (!r) { state.view = "home"; render(); return; }
       const cat = catById(r.category);
-      const on = state.favorites.has(r.id);
       const timing = [r.prep && `Prep ${r.prep}`, r.cook && `Cook ${r.cook}`, r.serves && `Serves ${r.serves}`].filter(Boolean);
 
       $("#view-recipe").innerHTML = `
@@ -1887,7 +2091,8 @@
             <div class="from">${r.by ? `By ${escapeHtml(r.by)} · ` : ""}Recipe from ${escapeHtml(r.from)}</div>
             ${timing.length ? `<div class="timing">${timing.map(t => `<span>${escapeHtml(t)}</span>`).join("")}</div>` : ""}
             <div class="detail-actions">
-              <button class="btn ${on ? "on" : ""}" type="button" data-fav="${r.id}">${on ? "Saved ♥" : "Save recipe"}</button>
+              <button class="btn btn-cook" type="button" data-cook>Cooking view</button>
+              <button class="btn btn-shop" type="button" data-shop>Shop this recipe</button>
               <button class="btn" type="button" onclick="window.print()">Print</button>
             </div>
           </div>
@@ -1916,6 +2121,100 @@
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
 
+    function renderShopSheet(r) {
+      const base = baseServings(r);
+      const mult = state.shopMultiplier;
+      const target = Math.round(base * mult * 10) / 10;
+      const items = r.ingredients.map((ing) => scaleIngredient(ing, mult));
+      return `
+        <div class="sheet-backdrop" data-close-shop>
+          <div class="sheet" role="dialog" aria-modal="true" aria-label="Shop this recipe" onclick="event.stopPropagation()">
+            <div class="sheet-head">
+              <div>
+                <h2>Shop this recipe</h2>
+                <p>${escapeHtml(r.title)} · grocery checklist</p>
+              </div>
+              <button class="sheet-close" type="button" data-close-shop aria-label="Close">×</button>
+            </div>
+            <div class="servings-row">
+              <label>Servings</label>
+              ${[1, 2, 3, 4].map((m) => `
+                <button class="chip ${mult === m ? "active" : ""}" type="button" data-servings="${m}">${Math.round(base * m)}</button>
+              `).join("")}
+              <div class="base-note">Scaled from about ${base} servings${r.serves ? ` (recipe lists ${escapeHtml(String(r.serves))})` : ""}. Showing list for ~${target}.</div>
+            </div>
+            <ul class="shop-list">
+              ${items.map((ing, i) => `
+                <li>
+                  <input type="checkbox" id="shop-${i}" />
+                  <label for="shop-${i}">${escapeHtml(ing)}</label>
+                </li>`).join("")}
+            </ul>
+            <div class="shop-actions">
+              <button class="btn btn-primary" type="button" data-copy-shop>Copy list</button>
+              <button class="btn" type="button" data-print-shop>Print list</button>
+              <button class="btn" type="button" data-close-shop>Done</button>
+            </div>
+          </div>
+        </div>`;
+    }
+
+    function renderCookMode(r) {
+      const step = Math.min(state.cookStep, r.steps.length - 1);
+      const total = r.steps.length;
+      return `
+        <div class="cook-mode" role="dialog" aria-modal="true" aria-label="Cooking view">
+          <div class="cook-top">
+            <h2>${escapeHtml(r.title)}</h2>
+            <button class="cook-exit" type="button" data-exit-cook>Exit</button>
+          </div>
+          <div class="cook-tabs">
+            <button type="button" class="${state.cookTab === "steps" ? "active" : ""}" data-cook-tab="steps">Steps</button>
+            <button type="button" class="${state.cookTab === "ingredients" ? "active" : ""}" data-cook-tab="ingredients">Ingredients</button>
+          </div>
+          <div class="cook-body">
+            ${state.cookTab === "steps" ? `
+              <div class="cook-progress">Step ${step + 1} of ${total}</div>
+              <div class="cook-step">${escapeHtml(r.steps[step] || "")}</div>
+              ${r.notes && step === total - 1 ? `<div class="note" style="margin-top:1.25rem;color:rgba(244,241,234,.75);border-color:rgba(255,255,255,.12)"><strong style="color:var(--gold-soft)">Cook’s note.</strong> ${escapeHtml(r.notes)}</div>` : ""}
+            ` : `
+              <ul class="cook-ings">
+                ${r.ingredients.map((ing, i) => `
+                  <li>
+                    <input type="checkbox" id="cook-ing-${i}" />
+                    <label for="cook-ing-${i}">${escapeHtml(ing)}</label>
+                  </li>`).join("")}
+              </ul>
+            `}
+          </div>
+          ${state.cookTab === "steps" ? `
+            <div class="cook-nav">
+              <button type="button" data-cook-prev ${step === 0 ? "disabled" : ""}>Previous</button>
+              <button class="next" type="button" data-cook-next>${step >= total - 1 ? "Done" : "Next step"}</button>
+            </div>` : `
+            <div class="cook-nav" style="grid-template-columns:1fr">
+              <button class="next" type="button" data-cook-tab="steps">Back to steps</button>
+            </div>`}
+        </div>`;
+    }
+
+    function renderOverlays() {
+      const host = $("#overlays");
+      const r = RECIPES.find(x => x.id === state.recipeId);
+      document.body.classList.toggle("cook-open", state.cookOpen);
+      if (!r) {
+        host.innerHTML = "";
+        releaseWakeLock();
+        return;
+      }
+      let html = "";
+      if (state.shopOpen) html += renderShopSheet(r);
+      if (state.cookOpen) html += renderCookMode(r);
+      host.innerHTML = html;
+      if (state.cookOpen) requestWakeLock();
+      else releaseWakeLock();
+    }
+
     function setView(view) {
       state.view = view;
       $$(".view").forEach(v => v.classList.toggle("active", v.id === `view-${view}`));
@@ -1935,12 +2234,18 @@
       else if (state.view === "browse") renderBrowse();
       else if (state.view === "recipe") renderRecipe();
       setView(state.view);
+      renderOverlays();
       bindDynamic();
     }
 
     function openRecipe(id) {
       state.recipeId = id;
       state.view = "recipe";
+      state.shopOpen = false;
+      state.cookOpen = false;
+      state.cookStep = 0;
+      state.cookTab = "steps";
+      state.shopMultiplier = 1;
       render();
       history.pushState({ view: "recipe", id }, "", `#recipe/${id}`);
     }
@@ -1949,6 +2254,8 @@
       state.view = "home";
       state.category = null;
       state.recipeId = null;
+      state.shopOpen = false;
+      state.cookOpen = false;
       if (!state.favOnly) history.pushState({ view: "home" }, "", "#");
       render();
     }
@@ -1958,6 +2265,8 @@
       state.category = catId || null;
       state.favOnly = false;
       state.recipeId = null;
+      state.shopOpen = false;
+      state.cookOpen = false;
       history.pushState({ view: "browse", category: state.category }, "", state.category ? `#browse/${state.category}` : "#browse");
       render();
     }
@@ -1987,6 +2296,82 @@
         if (history.length > 1) history.back();
         else goBrowse(state.category);
       });
+
+      $$("[data-shop]").forEach(el => el.addEventListener("click", () => {
+        state.shopOpen = true;
+        state.shopMultiplier = 1;
+        renderOverlays();
+        bindDynamic();
+      }));
+      $$("[data-close-shop]").forEach(el => el.addEventListener("click", () => {
+        state.shopOpen = false;
+        renderOverlays();
+        bindDynamic();
+      }));
+      $$("[data-servings]").forEach(el => el.addEventListener("click", () => {
+        state.shopMultiplier = Number(el.dataset.servings) || 1;
+        renderOverlays();
+        bindDynamic();
+      }));
+      $$("[data-copy-shop]").forEach(el => el.addEventListener("click", async () => {
+        const r = RECIPES.find(x => x.id === state.recipeId);
+        if (!r) return;
+        const lines = r.ingredients.map((ing) => `☐ ${scaleIngredient(ing, state.shopMultiplier)}`);
+        const text = `${r.title} — shopping list (~${Math.round(baseServings(r) * state.shopMultiplier)} servings)\n\n${lines.join("\n")}`;
+        try {
+          await navigator.clipboard.writeText(text);
+          el.textContent = "Copied!";
+          setTimeout(() => { el.textContent = "Copy list"; }, 1500);
+        } catch (_) {
+          alert(text);
+        }
+      }));
+      $$("[data-print-shop]").forEach(el => el.addEventListener("click", () => {
+        const r = RECIPES.find(x => x.id === state.recipeId);
+        if (!r) return;
+        const lines = r.ingredients.map((ing) => `<li>${escapeHtml(scaleIngredient(ing, state.shopMultiplier))}</li>`).join("");
+        const w = window.open("", "_blank");
+        w.document.write(`<html><head><title>${escapeHtml(r.title)} shopping list</title>
+          <style>body{font-family:system-ui,sans-serif;padding:24px} h1{font-size:22px} li{margin:8px 0;font-size:16px}</style></head>
+          <body><h1>${escapeHtml(r.title)}</h1><p>Shopping list · ~${Math.round(baseServings(r) * state.shopMultiplier)} servings</p><ul>${lines}</ul></body></html>`);
+        w.document.close();
+        w.focus();
+        w.print();
+      }));
+
+      $$("[data-cook]").forEach(el => el.addEventListener("click", () => {
+        state.cookOpen = true;
+        state.cookTab = "steps";
+        state.cookStep = 0;
+        renderOverlays();
+        bindDynamic();
+      }));
+      $$("[data-exit-cook]").forEach(el => el.addEventListener("click", () => {
+        state.cookOpen = false;
+        renderOverlays();
+        bindDynamic();
+      }));
+      $$("[data-cook-tab]").forEach(el => el.addEventListener("click", () => {
+        state.cookTab = el.dataset.cookTab;
+        renderOverlays();
+        bindDynamic();
+      }));
+      $$("[data-cook-prev]").forEach(el => el.addEventListener("click", () => {
+        state.cookStep = Math.max(0, state.cookStep - 1);
+        renderOverlays();
+        bindDynamic();
+      }));
+      $$("[data-cook-next]").forEach(el => el.addEventListener("click", () => {
+        const r = RECIPES.find(x => x.id === state.recipeId);
+        if (!r) return;
+        if (state.cookStep >= r.steps.length - 1) {
+          state.cookOpen = false;
+        } else {
+          state.cookStep += 1;
+        }
+        renderOverlays();
+        bindDynamic();
+      }));
     }
 
     $("#search").addEventListener("input", e => {
