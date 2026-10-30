@@ -2,7 +2,9 @@ node_modules/
 package-lock.json
 *.docx
 *.doc
+*.pdf
 Marino Family Recipe Collection Draft 2.md
+_pdf_extract/
 _docx_extract/
 _temp*
 media/stock-temp/
