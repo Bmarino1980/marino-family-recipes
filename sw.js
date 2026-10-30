@@ -1,5 +1,5 @@
 /* Marino Family Recipes — offline-friendly PWA service worker */
-const CACHE = "marino-recipes-v12";
+const CACHE = "marino-recipes-v13";
 const PRECACHE = [
   "./",
   "./index.html",
