@@ -1,5 +1,5 @@
 /* Marino Family Recipes — offline-friendly PWA service worker */
-const CACHE = "marino-recipes-v4";
+const CACHE = "marino-recipes-v5";
 const PRECACHE = [
   "./",
   "./index.html",
@@ -41,6 +41,21 @@ self.addEventListener("fetch", (event) => {
           return res;
         })
         .catch(() => caches.match(req).then((r) => r || caches.match("./index.html")))
+    );
+    return;
+  }
+
+  // IMAGE CACHE BUST: network-first for media so photo updates show up
+  if (url.pathname.includes("/media/") || url.searchParams.has("v")) {
+    event.respondWith(
+      fetch(req)
+        .then((res) => {
+          if (!res.ok) return res;
+          const copy = res.clone();
+          caches.open(CACHE).then((c) => c.put(req, copy));
+          return res;
+        })
+        .catch(() => caches.match(req))
     );
     return;
   }
