@@ -91,14 +91,24 @@
       position: absolute; left: .85rem; top: 50%; transform: translateY(-50%);
       width: 16px; height: 16px; opacity: .55; pointer-events: none;
     }
-    .fav-toggle {
+    .cart-toggle {
+      position: relative;
       width: 42px; height: 42px; border-radius: 50%;
       display: grid; place-items: center;
       border: 1px solid var(--line); background: rgba(255,255,255,.65); flex-shrink: 0;
+      color: var(--brand);
     }
-    .fav-toggle[aria-pressed="true"] {
+    .cart-toggle.has-items {
       background: var(--brand); color: var(--paper); border-color: var(--brand);
     }
+    .cart-toggle .cart-badge {
+      position: absolute; top: -3px; right: -3px;
+      min-width: 18px; height: 18px; padding: 0 5px;
+      border-radius: 999px; background: var(--gold); color: #1a1608;
+      font-size: .68rem; font-weight: 700; line-height: 18px; text-align: center;
+      border: 2px solid var(--paper);
+    }
+    .cart-toggle .cart-badge:empty { display: none; }
 
     main { flex: 1; width: min(1180px, 100%); margin: 0 auto; padding: 0 1rem 5.5rem; }
     .view { display: none; animation: fadeUp .45s ease both; }
@@ -250,14 +260,17 @@
       margin: 0; line-height: 1.2; color: var(--brand);
     }
     .recipe-card .meta { margin-top: auto; font-size: .88rem; color: var(--muted); }
-    .heart {
+    .cart-btn {
       position: absolute; top: .75rem; right: .75rem; z-index: 2;
       width: 36px; height: 36px; border-radius: 50%;
       display: grid; place-items: center; color: var(--muted);
       background: rgba(255,255,255,.9); border: 1px solid rgba(255,255,255,.5);
       backdrop-filter: blur(6px);
     }
-    .heart.on { color: var(--danger); }
+    .cart-btn svg { width: 18px; height: 18px; }
+    .cart-btn.on {
+      color: #fff; background: var(--brand); border-color: var(--brand);
+    }
 
     .empty { text-align: center; padding: 3rem 1rem; color: var(--muted); }
 
@@ -338,20 +351,6 @@
       border: 1px solid var(--line); background: #fff; flex-shrink: 0;
       font-size: 1.2rem; line-height: 1;
     }
-    .servings-row {
-      display: flex; flex-wrap: wrap; align-items: center; gap: .55rem;
-      margin-bottom: 1rem; padding: .85rem 1rem;
-      background: rgba(255,255,255,.8); border: 1px solid var(--line); border-radius: 16px;
-    }
-    .servings-row label { font-weight: 600; color: var(--brand); margin-right: .25rem; }
-    .servings-row .chip {
-      min-width: 44px; padding: .45rem .7rem; border-radius: 999px;
-      border: 1px solid var(--line); background: #fff; font-weight: 600;
-    }
-    .servings-row .chip.active {
-      background: var(--brand); color: #fff; border-color: var(--brand);
-    }
-    .servings-row .base-note { width: 100%; font-size: .82rem; color: var(--muted); }
     .shop-list { list-style: none; padding: 0; margin: 0 0 1rem; display: grid; gap: .45rem; }
     .shop-list li {
       display: grid; grid-template-columns: 22px 1fr; gap: .65rem; align-items: start;
@@ -365,6 +364,41 @@
       padding: .7rem 1rem; font-weight: 600;
     }
     .shop-actions .btn-primary { background: var(--brand); color: #fff; border-color: var(--brand); }
+    .shop-actions .btn-danger {
+      background: transparent; color: var(--danger); border-color: rgba(154, 63, 47, 0.35);
+    }
+    .cart-recipes {
+      list-style: none; padding: 0; margin: 0 0 1.15rem; display: grid; gap: .5rem;
+    }
+    .cart-recipes li {
+      display: flex; align-items: center; justify-content: space-between; gap: .75rem;
+      padding: .7rem .85rem; background: #fff; border: 1px solid var(--line); border-radius: 14px;
+    }
+    .cart-recipes .cart-recipe-title {
+      font-weight: 600; color: var(--brand); line-height: 1.25;
+    }
+    .cart-recipes .cart-recipe-meta {
+      display: block; font-size: .82rem; color: var(--muted); font-weight: 500; margin-top: .15rem;
+    }
+    .cart-recipes .remove-recipe {
+      width: 34px; height: 34px; border-radius: 50%; flex-shrink: 0;
+      border: 1px solid var(--line); background: #f7f5f0; color: var(--muted);
+      font-size: 1.1rem; line-height: 1;
+    }
+    .cart-section-label {
+      font-size: .78rem; letter-spacing: .1em; text-transform: uppercase;
+      font-weight: 700; color: var(--leaf); margin: 0 0 .55rem;
+    }
+    .cart-recipe-block { margin-bottom: 1.15rem; }
+    .cart-recipe-block h3 {
+      font-family: var(--font-display); font-size: 1.1rem;
+      margin: 0 0 .55rem; color: var(--brand);
+    }
+    .cart-empty {
+      text-align: center; padding: 1.75rem 1rem; color: var(--muted);
+      background: rgba(255,255,255,.7); border: 1px dashed var(--line); border-radius: 16px;
+      margin-bottom: 1rem;
+    }
 
     /* Cook mode */
     .cook-mode {
@@ -527,7 +561,7 @@
     }
 
     @media print {
-      .topbar, .bottom-nav, .detail-back, .detail-actions, .heart, .fav-toggle, .install-btn, #overlays { display: none !important; }
+      .topbar, .bottom-nav, .detail-back, .detail-actions, .cart-btn, .cart-toggle, .install-btn, #overlays { display: none !important; }
       body { background: white; }
       .detail-hero { min-height: 240px; box-shadow: none; }
       .panel { break-inside: avoid; }
@@ -551,10 +585,13 @@
         <span class="dot" aria-hidden="true"></span>
         Install
       </button>
-      <button class="fav-toggle" id="favFilter" type="button" aria-pressed="false" title="Show favorites" aria-label="Show favorites">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-          <path d="M12 21s-6.7-4.35-9.33-8.1C.8 10.2 1.2 6.8 3.9 5.2 6.1 3.9 8.7 4.5 10.2 6.3L12 8.4l1.8-2.1c1.5-1.8 4.1-2.4 6.3-1.1 2.7 1.6 3.1 5 1.23 7.7C18.7 16.65 12 21 12 21z"/>
+      <button class="cart-toggle" id="cartToggle" type="button" title="Shopping cart" aria-label="Open shopping cart">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <circle cx="9" cy="20" r="1.4"></circle>
+          <circle cx="17" cy="20" r="1.4"></circle>
+          <path d="M3 4h2l2.2 11h10.4l1.8-8H7"></path>
         </svg>
+        <span class="cart-badge" id="cartBadge" hidden></span>
       </button>
     </header>
 
@@ -574,21 +611,21 @@
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h10"/></svg>
         Browse
       </button>
-      <button type="button" data-nav="favorites">
-        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 21s-6.7-4.35-9.33-8.1C.8 10.2 1.2 6.8 3.9 5.2 6.1 3.9 8.7 4.5 10.2 6.3L12 8.4l1.8-2.1c1.5-1.8 4.1-2.4 6.3-1.1 2.7 1.6 3.1 5 1.23 7.7C18.7 16.65 12 21 12 21z"/></svg>
-        Saved
+      <button type="button" data-nav="cart">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="20" r="1.4"/><circle cx="17" cy="20" r="1.4"/><path d="M3 4h2l2.2 11h10.4l1.8-8H7"/></svg>
+        Cart
       </button>
     </nav>
   </div>
 
   <script>
     const CATEGORIES = [
-      { id: "breakfast", name: "Breakfast & Breads", blurb: "Welcome the morning", short: "Breakfast", image: "media/cat-breakfast.jpg?v=7" },
-      { id: "soups", name: "Soups, Salads & Sandwiches", blurb: "It's noon… time to eat", short: "Lunch", image: "media/cat-soups.jpg?v=7" },
-      { id: "appetizers", name: "Appetizers", blurb: "From unique treats to spicy eats", short: "Apps", image: "media/cat-appetizers.jpg?v=7" },
-      { id: "dinner", name: "Dinner Entrees & Sides", blurb: "The heart of the table", short: "Dinner", image: "media/cat-dinner.jpg?v=7" },
-      { id: "desserts", name: "Desserts", blurb: "Sweet sensations", short: "Sweets", image: "media/cat-desserts.jpg?v=7" },
-      { id: "cocktails", name: "Cocktails", blurb: "Double the pleasure", short: "Drinks", image: "media/cat-cocktails.jpg?v=7" }
+      { id: "breakfast", name: "Breakfast & Breads", blurb: "Welcome the morning", short: "Breakfast", image: "media/cat-breakfast.jpg?v=8" },
+      { id: "soups", name: "Soups, Salads & Sandwiches", blurb: "It's noon… time to eat", short: "Lunch", image: "media/cat-soups.jpg?v=8" },
+      { id: "appetizers", name: "Appetizers", blurb: "From unique treats to spicy eats", short: "Apps", image: "media/cat-appetizers.jpg?v=8" },
+      { id: "dinner", name: "Dinner Entrees & Sides", blurb: "The heart of the table", short: "Dinner", image: "media/cat-dinner.jpg?v=8" },
+      { id: "desserts", name: "Desserts", blurb: "Sweet sensations", short: "Sweets", image: "media/cat-desserts.jpg?v=8" },
+      { id: "cocktails", name: "Cocktails", blurb: "Double the pleasure", short: "Drinks", image: "media/cat-cocktails.jpg?v=8" }
     ];
 
     const RECIPES = [
@@ -600,7 +637,7 @@
         "by": "Lillian Marino",
         "prep": "15 minutes",
         "cook": "1 hour",
-        "image": "media/breakfast-bake.jpg?v=7",
+        "image": "media/breakfast-bake.jpg?v=8",
         "ingredients": [
           "½ loaf brioche bread, cubed",
           "6 eggs",
@@ -625,7 +662,7 @@
         "from": "Rita Marino",
         "prep": "15 minutes",
         "cook": "1 hour",
-        "image": "media/banana-bread.jpg?v=7",
+        "image": "media/banana-bread.jpg?v=8",
         "fact": "Growing up we had one cookbook “Betty Crocker”. Banana Bread was one of my favorite recipes I made throughout my lifetime.",
         "ingredients": [
           "½ cups unsalted butter, melted and cool",
@@ -657,7 +694,7 @@
         "prep": "10 minutes",
         "cook": "15 minutes",
         "serves": "4",
-        "image": "media/french-toast.jpg?v=7",
+        "image": "media/french-toast.jpg?v=8",
         "fact": "French toast was my favorite breakfast growing up in Beaumont. I made this recipe often for my children and now for my grandson Vincent. He loves his Nana’s French toast for breakfast.",
         "ingredients": [
           "4 egg yolks",
@@ -685,7 +722,7 @@
         "from": "Rita Marino",
         "prep": "10 minutes",
         "cook": "20 minutes",
-        "image": "media/biscuit-donuts.jpg?v=7",
+        "image": "media/biscuit-donuts.jpg?v=8",
         "fact": "Growing up in the late 50’s early 60’s my sisters & I would make these donuts. I occasionally made these for my children who also enjoyed them.",
         "ingredients": [
           "1 (10 to 12-inch) skillet",
@@ -707,7 +744,7 @@
         "from": "Denise Stasio",
         "prep": "10 minutes",
         "cook": "30 minutes",
-        "image": "media/ten-can-soup.jpg?v=7",
+        "image": "media/ten-can-soup.jpg?v=8",
         "fact": "A favorite go-to hearty soup for cold weather days, complements of my sister Denise. My family loves this soup.",
         "ingredients": [
           "1½ pounds ground chuck beef",
@@ -730,7 +767,7 @@
         "from": "Lena Marino",
         "prep": "20 minutes",
         "cook": "40 minutes",
-        "image": "media/chicken-vegetable-soup.jpg?v=7",
+        "image": "media/chicken-vegetable-soup.jpg?v=8",
         "fact": "Enjoyed this soup at Emiel & Lena’s house in the late 1960’s. Lena made this soup at least once a month and usually added butter beans.",
         "ingredients": [
           "6 chicken parts with bone",
@@ -756,7 +793,7 @@
         "by": "Rita Marino",
         "prep": "20 minutes",
         "cook": "20 minutes",
-        "image": "media/spinach-bacon-soup.jpg?v=7",
+        "image": "media/spinach-bacon-soup.jpg?v=8",
         "fact": "I acquired a great little specialty cookbook, Fessin’ Up by Sue Fess and had to add my favorite soup. I make this soup for my mom when she comes to visit me in San Antonio.",
         "ingredients": [
           "1 small onion, chopped",
@@ -783,7 +820,7 @@
         "from": "Rita Marino",
         "prep": "5 minutes",
         "cook": "5 minutes",
-        "image": "media/grill-cheese.jpg?v=7",
+        "image": "media/grill-cheese.jpg?v=8",
         "fact": "This quick and easy sandwich has been a quick snack for my sons and their friends throughout the years.",
         "ingredients": [
           "2 slices Velveeta cheese",
@@ -804,7 +841,7 @@
         "title": "Tuna Salad",
         "from": "Rita Marino",
         "prep": "30 minutes",
-        "image": "media/tuna-salad.jpg?v=7",
+        "image": "media/tuna-salad.jpg?v=8",
         "fact": "Everyone has their own version of tuna salad. I love the original recipe I had growing up. Simple and satisfying.",
         "ingredients": [
           "1 (12-ounce) can chunk light tuna",
@@ -830,7 +867,7 @@
         "by": "Rita Marino",
         "prep": "35 minutes",
         "cook": "30 minutes",
-        "image": "media/italian-wedding-soup.jpg?v=7",
+        "image": "media/italian-wedding-soup.jpg?v=8",
         "fact": "In the mid 90’s our family occasionally ate lunch on Sundays after mass at Spaghetti Warehouse. Years later I found their Italian Wedding Soup recipe in a magazine and make it on request — usually from Blake.",
         "ingredients": [
           "1 gallon water",
@@ -873,7 +910,7 @@
         "prep": "20 minutes",
         "cook": "8 hours",
         "serves": "6–8",
-        "image": "media/chicken-tortilla-soup.jpg?v=7",
+        "image": "media/chicken-tortilla-soup.jpg?v=8",
         "ingredients": [
           "4 boneless chicken breasts",
           "2 (15-ounce) cans black beans, undrained",
@@ -901,7 +938,7 @@
         "title": "Shredded Lettuce Salad",
         "from": "Helen Del Papa",
         "prep": "20 minutes",
-        "image": "media/shredded-lettuce-salad.jpg?v=7",
+        "image": "media/shredded-lettuce-salad.jpg?v=8",
         "fact": "Alisson Del Papa made this salad for the Gary Thanksgiving in 2018 and has been the perfect go-to salad for lunch or dinner.",
         "ingredients": [
           "2 romaine hearts",
@@ -926,7 +963,7 @@
         "from": "Grace Perkins",
         "prep": "20 minutes",
         "cook": "1 hour",
-        "image": "media/chicken-gumbo.jpg?v=7",
+        "image": "media/chicken-gumbo.jpg?v=8",
         "fact": "This recipe was always a popular dish at Grace’s restaurant in Beaumont.",
         "ingredients": [
           "1½ gallons water",
@@ -958,7 +995,7 @@
         "from": "Debbie Tortorice",
         "prep": "20 minutes",
         "cook": "20 minutes",
-        "image": "media/italian-pasta-salad.jpg?v=7",
+        "image": "media/italian-pasta-salad.jpg?v=8",
         "fact": "In the late 70’s at one of the many Marino family gatherings, I sampled this salad made by a classmate. I have been making it ever since. Great side for work potluck, special occasions and weekend family get-togethers.",
         "ingredients": [
           "1 (12-ounce) package vermicelli",
@@ -983,7 +1020,7 @@
         "from": "Loretta Gary",
         "prep": "20 minutes",
         "cook": "20 minutes",
-        "image": "media/marinated-carrot-salad.jpg?v=7",
+        "image": "media/marinated-carrot-salad.jpg?v=8",
         "fact": "This recipe is another traditional side dish served at the Gary Thanksgiving and Christmas gatherings.",
         "ingredients": [
           "2½ quarts water",
@@ -1012,7 +1049,7 @@
         "from": "Loretta Gary",
         "prep": "10 minutes",
         "cook": "15 minutes",
-        "image": "media/crab-mousse.jpg?v=7",
+        "image": "media/crab-mousse.jpg?v=8",
         "fact": "This recipe is a traditional appetizer served at the Gary Thanksgiving and Christmas family gatherings. One of my mom’s favorite go-to dishes she makes for her bridge games at the Beaumont Bridge Studio.",
         "ingredients": [
           "2 (8-ounce) packages cream cheese",
@@ -1040,7 +1077,7 @@
         "from": "Carl Michael Marino",
         "prep": "20 minutes",
         "cook": "30 minutes",
-        "image": "media/carls-salsa.jpg?v=7",
+        "image": "media/carls-salsa.jpg?v=8",
         "fact": "February 2021, we had a taste test of 5 salsas from various local Mexican restaurants and homemade. Carl’s salsa placed 2nd with Henry’s Puffy Taco’s taking first place. Los Barrios salsa was the kids’ pick. I enjoy Carl’s salsa and prefer it anytime over the local Mexican restaurants.",
         "ingredients": [
           "2½ quarts water",
@@ -1068,7 +1105,7 @@
         "by": "Rita Marino",
         "prep": "10 minutes",
         "cook": "10 minutes",
-        "image": "media/bob-armstrong-dip.jpg?v=7",
+        "image": "media/bob-armstrong-dip.jpg?v=8",
         "fact": "One of our favorite Mexican restaurants in Austin is Matt’s El Rancho.",
         "ingredients": [
           "Meat: 8 ounces ground beef",
@@ -1107,7 +1144,7 @@
         "from": "Lena Marino",
         "prep": "10 minutes",
         "cook": "1½ hours",
-        "image": "media/chicken-fricassee.jpg?v=7",
+        "image": "media/chicken-fricassee.jpg?v=8",
         "fact": "Enjoyed this dish at Emiel & Lena’s house in the late 1960’s. Usually served with black-eyed peas. I often made this dish for my kids growing up and now their children enjoy it.",
         "ingredients": [
           "6 pieces chicken (raw)",
@@ -1131,7 +1168,7 @@
         "from": "Rita Marino",
         "prep": "15 minutes",
         "cook": "45 minutes",
-        "image": "media/chili.jpg?v=7",
+        "image": "media/chili.jpg?v=8",
         "fact": "This is one of the first meals I cooked when Carl & I were married in 1974. We both worked and it was simple and quick. I still cook it the same way today.",
         "ingredients": [
           "2 pounds ground chuck",
@@ -1155,7 +1192,7 @@
         "from": "Rita Marino",
         "prep": "20 minutes",
         "cook": "1 hour 15 minutes",
-        "image": "media/cheese-lasagna.jpg?v=7",
+        "image": "media/cheese-lasagna.jpg?v=8",
         "fact": "Lasagna is one of my favorite Italian meals occasionally enjoyed at Lena & Emiel’s house since the late 60’s through the late 90’s. I still enjoy making this dish for my family on special occasions.",
         "ingredients": [
           "1 (48-ounce) jar of your favorite spaghetti sauce or homemade sauce",
@@ -1182,7 +1219,7 @@
         "from": "Rita Marino",
         "prep": "Sauce 40 min · Meatballs 15 min",
         "cook": "Sauce 5–10 hrs · Meatballs 2–8 hrs",
-        "image": "media/spaghetti-meatballs.jpg?v=7",
+        "image": "media/spaghetti-meatballs.jpg?v=8",
         "fact": "I was first introduced to this wonderful dish in the late 70’s at the Marino’s. I had never tasted the flavor of a tomato spaghetti sauce like this before and still do not feel I have captured Lena’s sauce, but it is close. Lena served this dish most Sundays as her mother (Carmela) did — an Italian family tradition.",
         "ingredients": [
           "Sauce: 2 tablespoons olive oil",
@@ -1218,7 +1255,7 @@
         "from": "Loretta Gary",
         "prep": "20 minutes",
         "cook": "30 minutes",
-        "image": "media/squash-casserole.jpg?v=7",
+        "image": "media/squash-casserole.jpg?v=8",
         "fact": "This recipe is another traditional side dish served at the Gary Thanksgiving and Christmas gatherings.",
         "ingredients": [
           "10 squash, sliced",
@@ -1244,7 +1281,7 @@
         "from": "Loretta Gary",
         "prep": "20 minutes",
         "cook": "30 minutes",
-        "image": "media/cornbread-dressing.jpg?v=7",
+        "image": "media/cornbread-dressing.jpg?v=8",
         "fact": "This recipe is another traditional side dish served at the Gary Thanksgiving and Christmas gatherings.",
         "ingredients": [
           "3 packages corn kit (Morrison or Gladiola)",
@@ -1273,7 +1310,7 @@
         "from": "Lena Marino",
         "prep": "15 minutes",
         "cook": "30 minutes",
-        "image": "media/sausage-potatoes.jpg?v=7",
+        "image": "media/sausage-potatoes.jpg?v=8",
         "fact": "This dish was one of Lena’s go-to quick meals that always was a family favorite. The Marino’s bought their meat at the packing house and always had the best flavor.",
         "ingredients": [
           "5 medium russet potatoes, peeled and sliced",
@@ -1297,7 +1334,7 @@
         "from": "Mary Stone",
         "prep": "5 minutes",
         "cook": "20 minutes",
-        "image": "media/stones-baked-beans.jpg?v=7",
+        "image": "media/stones-baked-beans.jpg?v=8",
         "fact": "In the mid-70’s a co-worker of Carl’s brought this dish to a potluck luncheon and I decided I had to keep the recipe as a side dish. Since that time, I have been making it for my family.",
         "ingredients": [
           "2 (11-ounce) cans Campbell’s Pork & Beans",
@@ -1323,7 +1360,7 @@
         "from": "Lena Marino",
         "prep": "10 minutes",
         "cook": "30 minutes",
-        "image": "media/taco-rice.jpg?v=7",
+        "image": "media/taco-rice.jpg?v=8",
         "fact": "This recipe was a weekly dish at Mee-maw and Pawpaw Marino’s house. Still served today at my house.",
         "ingredients": [
           "1½ pounds ground chuck",
@@ -1345,7 +1382,7 @@
         "from": "Rita Marino",
         "prep": "45 minutes",
         "cook": "10 minutes",
-        "image": "media/pizza.jpg?v=7",
+        "image": "media/pizza.jpg?v=8",
         "fact": "I started making homemade pizzas in the early 90’s using the Kraft mixes and yeast packet dough instructions for the crust from HEB. I later bought a bread cookbook “Bread in Half the Time,” occasionally using their recipe and my family’s favorite toppings.",
         "ingredients": [
           "1½ cups warm water",
@@ -1375,7 +1412,7 @@
         "from": "Lena Marino",
         "prep": "15 minutes",
         "cook": "6 hours",
-        "image": "media/brown-gravy-rice.jpg?v=7",
+        "image": "media/brown-gravy-rice.jpg?v=8",
         "fact": "This recipe was created from a dish Lena Marino served weekly made with the brown gravy mix. Lena cooked a roast with this mix in the oven. I revised it using a crockpot in place of the oven.",
         "ingredients": [
           "2 (4.5-ounce) packages brown gravy mix (Southeastern Mills Classic)",
@@ -1401,7 +1438,7 @@
         "from": "Rita Marino",
         "prep": "5 minutes",
         "cook": "20 minutes",
-        "image": "media/italian-green-beans.jpg?v=7",
+        "image": "media/italian-green-beans.jpg?v=8",
         "fact": "Lena Marino made green beans and potatoes often using regular cut green beans. I still make them today as she did but using Italian cut green beans and a small addition of red pepper flakes.",
         "ingredients": [
           "1 (32-ounce) can Italian cut green beans",
@@ -1424,7 +1461,7 @@
         "from": "Jessica Marino",
         "prep": "15 minutes",
         "cook": "20 minutes",
-        "image": "media/street-tacos.jpg?v=7",
+        "image": "media/street-tacos.jpg?v=8",
         "fact": "Brian & Jessica sampled street tacos while in Reynosa, Mexico in 2012. Since that time he makes his own street tacos at home usually once or twice a month for family and friends.",
         "ingredients": [
           "2 pounds beef skirt steak",
@@ -1456,7 +1493,7 @@
         "from": "Denise Stasio",
         "prep": "15 minutes",
         "cook": "20 minutes",
-        "image": "media/chicken-pasta-toss.jpg?v=7",
+        "image": "media/chicken-pasta-toss.jpg?v=8",
         "fact": "Denise won this recipe and wooden bread basket at a St. Agnes Academy faculty luncheon in Houston. The Stasio’s have enjoyed this dinner for many years and have served it often to friends & family.",
         "ingredients": [
           "1 (1-pound) box bowtie pasta",
@@ -1478,7 +1515,7 @@
         "from": "Dusty Marino / Grampa Joe O’Bryant",
         "prep": "15 minutes",
         "cook": "6 hours",
-        "image": "media/barbeque-ribs.jpg?v=7",
+        "image": "media/barbeque-ribs.jpg?v=8",
         "fact": "Grampa Joe O’Bryant came up with his own special barbeque sauce in the early 70’s during one of their many family barbeques — still made today and Dusty’s favorite dish.",
         "ingredients": [
           "Sauce: 2 (18-ounce) bottles Original Kraft BBQ sauce",
@@ -1509,7 +1546,7 @@
         "from": "Lena Del Papa",
         "prep": "20 minutes",
         "cook": "45 minutes",
-        "image": "media/biscotti.jpg?v=7",
+        "image": "media/biscotti.jpg?v=8",
         "fact": "These cookies are a Christmas tradition. I usually made these for my Bunco group and work holiday parties. Always a big hit.",
         "ingredients": [
           "6 cups flour",
@@ -1542,7 +1579,7 @@
         "by": "Rita Marino",
         "prep": "20 minutes",
         "cook": "45 minutes",
-        "image": "media/martha-washingtons.jpg?v=7",
+        "image": "media/martha-washingtons.jpg?v=8",
         "fact": "In the mid 70’s at one of the many Marino gatherings with friends & family, I tasted this sweet treat. At that time called “Chocolate Dips” and later discovered the real name “Old fashion Martha Washington candy”. Since that time, I’ve made them for holidays, work potlucks and Bunco games.",
         "ingredients": [
           "3 cups powdered sugar",
@@ -1567,7 +1604,7 @@
         "from": "Rita Marino",
         "prep": "10 minutes",
         "cook": "55 minutes",
-        "image": "media/cinnamon-streusel-cake.jpg?v=7",
+        "image": "media/cinnamon-streusel-cake.jpg?v=8",
         "fact": "I originally baked this cake for CarlMichael’s birthday celebrations throughout the years. Today I bake it for any occasion as a dessert for family gatherings. It has become a family favorite.",
         "ingredients": [
           "Streusel: ¼ cups granulated sugar",
@@ -1599,7 +1636,7 @@
         "from": "Dusty Marino",
         "prep": "10 minutes",
         "cook": "48 minutes",
-        "image": "media/angel-food-cake.jpg?v=7",
+        "image": "media/angel-food-cake.jpg?v=8",
         "fact": "Growing up angel food cake was my favorite cake, usually topped with strawberries & whipped cream. Dusty & I share our love for this simple cake that we both enjoyed every year on our birthdays. This recipe is from Dusty’s Granny who also chose this cake for her birthday every year.",
         "ingredients": [
           "Cake: 1 box angel food cake mix (Duncan Hines)",
@@ -1625,7 +1662,7 @@
         "from": "Loretta Gary",
         "prep": "15 minutes",
         "cook": "10 minutes",
-        "image": "media/tipsy-pudding.jpg?v=7",
+        "image": "media/tipsy-pudding.jpg?v=8",
         "fact": "This dessert was made by Julia and served at Momo’s (Grandmother Bordages) house growing up. This family recipe is still made by my mom every Thanksgiving & Christmas during the family gatherings.",
         "ingredients": [
           "1 quart whole milk",
@@ -1654,7 +1691,7 @@
         "by": "Rita Marino",
         "prep": "10 minutes",
         "cook": "9–11 minutes",
-        "image": "media/toll-house-cookies.jpg?v=7",
+        "image": "media/toll-house-cookies.jpg?v=8",
         "fact": "I started making these cookies in the early 60’s with my sisters. A family favorite. Simple and timeless.",
         "ingredients": [
           "2¼ cups all-purpose flour",
@@ -1682,7 +1719,7 @@
         "from": "Lillian Marino",
         "prep": "10 minutes",
         "cook": "8–10 minutes",
-        "image": "media/sugar-cookies.jpg?v=7",
+        "image": "media/sugar-cookies.jpg?v=8",
         "fact": "Lillian shared this recipe with me after she started baking her own made-to-order cookies. This cookie recipe was used (with a slight variation) for Lucas & Paula’s wedding (Lillian’s brother – 11/11/22). This is my go-to sugar cookie recipe now. Always turns out delicious.",
         "ingredients": [
           "6½ cups all-purpose flour",
@@ -1712,7 +1749,7 @@
         "by": "Denise Stasio",
         "prep": "10 minutes",
         "cook": "varies",
-        "image": "media/rosette-cookies.jpg?v=7",
+        "image": "media/rosette-cookies.jpg?v=8",
         "fact": "A traditional cookie made at the Stasio’s house in New York during the Christmas season.",
         "ingredients": [
           "2 eggs",
@@ -1740,7 +1777,7 @@
         "from": "Rita Marino",
         "prep": "12 minutes",
         "cook": "35 minutes",
-        "image": "media/pecan-pie.jpg?v=7",
+        "image": "media/pecan-pie.jpg?v=8",
         "fact": "A holiday favorite that my sisters and I made often growing up.",
         "ingredients": [
           "½ cups (1 stick) butter, melted",
@@ -1765,7 +1802,7 @@
         "from": "Lena Marino",
         "prep": "15 minutes",
         "cook": "20 minutes",
-        "image": "media/banana-pudding.jpg?v=7",
+        "image": "media/banana-pudding.jpg?v=8",
         "fact": "Lena’s banana pudding was always a treat for her family. The boys loved to eat the pudding hot as she finished mixing it in the serving bowl.",
         "ingredients": [
           "1 (12-ounce) can Carnation evaporated milk",
@@ -1793,7 +1830,7 @@
         "from": "Lava Flow",
         "by": "Rita Marino",
         "prep": "15 minutes",
-        "image": "media/miami-vice.jpg?v=7",
+        "image": "media/miami-vice.jpg?v=8",
         "fact": "I first enjoyed this drink on a Caribbean cruise we went on with Carl & Dusty in the summer of 2019. In December of 2020 we went to Hawaii for Christmas with the family and this drink was known as a Lava Flow.",
         "ingredients": [
           "10 ounces (2 jiggers) Malibu rum",
@@ -1818,7 +1855,7 @@
         "title": "Hawaiian Mai Tai",
         "from": "Lillian Marino",
         "prep": "15 minutes",
-        "image": "media/hawaiian-mai-tai.jpg?v=7",
+        "image": "media/hawaiian-mai-tai.jpg?v=8",
         "fact": "My favorite signature drink from the bar at Lillian & Blake’s awesome & breathtaking wedding in Hawaii (2/11/23).",
         "ingredients": [
           "Rum",
@@ -1840,7 +1877,7 @@
         "from": "Cheri Marino",
         "by": "Rita Marino",
         "prep": "10 minutes",
-        "image": "media/frozen-margarita.jpg?v=7",
+        "image": "media/frozen-margarita.jpg?v=8",
         "fact": "My favorite frozen margaritas are made at Los Barrios Restaurant here in San Antonio. When making them at home, Cheri Marino uses this recipe most like Los Barrios frozen margaritas.",
         "ingredients": [
           "6 ounces tequila",
@@ -1857,16 +1894,25 @@
         ]
       }
     ];
-    const FAV_KEY = "marino-favs-v1";
+    const CART_KEY = "marino-cart-v1";
+    const CART_ICON = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="20" r="1.4"></circle><circle cx="17" cy="20" r="1.4"></circle><path d="M3 4h2l2.2 11h10.4l1.8-8H7"></path></svg>`;
+
+    function loadCartIds() {
+      try {
+        const raw = JSON.parse(localStorage.getItem(CART_KEY) || "[]");
+        return new Set(Array.isArray(raw) ? raw : []);
+      } catch (_) {
+        return new Set();
+      }
+    }
+
     const state = {
       view: "home",
       category: null,
       recipeId: null,
       query: "",
-      favOnly: false,
-      favorites: new Set(JSON.parse(localStorage.getItem(FAV_KEY) || "[]")),
-      shopOpen: false,
-      shopServings: null,
+      cart: loadCartIds(),
+      cartOpen: false,
       cookOpen: false,
       cookTab: "steps",
       cookStep: 0,
@@ -1877,79 +1923,50 @@
     const $$ = (sel, el = document) => [...el.querySelectorAll(sel)];
 
     function catById(id) { return CATEGORIES.find(c => c.id === id); }
-    function saveFavs() { localStorage.setItem(FAV_KEY, JSON.stringify([...state.favorites])); }
+    function saveCart() { localStorage.setItem(CART_KEY, JSON.stringify([...state.cart])); }
 
-    function toggleFav(id, ev) {
+    function cartRecipes() {
+      return [...state.cart].map((id) => RECIPES.find((r) => r.id === id)).filter(Boolean);
+    }
+
+    function cartItemCount() {
+      return cartRecipes().reduce((n, r) => n + (r.ingredients?.length || 0), 0);
+    }
+
+    function updateCartBadge() {
+      const n = state.cart.size;
+      const badge = $("#cartBadge");
+      const toggle = $("#cartToggle");
+      if (!badge || !toggle) return;
+      badge.hidden = n === 0;
+      badge.textContent = n ? String(n) : "";
+      toggle.classList.toggle("has-items", n > 0);
+      toggle.setAttribute("aria-label", n ? `Open shopping cart, ${n} recipe${n === 1 ? "" : "s"}` : "Open shopping cart");
+    }
+
+    function toggleCartRecipe(id, ev) {
       if (ev) ev.stopPropagation();
-      if (state.favorites.has(id)) state.favorites.delete(id);
-      else state.favorites.add(id);
-      saveFavs();
+      if (state.cart.has(id)) state.cart.delete(id);
+      else state.cart.add(id);
+      saveCart();
       render();
     }
 
-    const UNICODE_FRAC = { "¼": 0.25, "½": 0.5, "¾": 0.75, "⅓": 1 / 3, "⅔": 2 / 3, "⅛": 0.125, "⅜": 0.375, "⅝": 0.625, "⅞": 0.875 };
-
-    function formatAmount(n) {
-      if (!Number.isFinite(n) || n <= 0) return String(n);
-      const whole = Math.floor(n + 1e-9);
-      const frac = n - whole;
-      const fracs = [
-        [0, ""], [0.125, "⅛"], [0.25, "¼"], [1 / 3, "⅓"], [0.375, "⅜"],
-        [0.5, "½"], [0.625, "⅝"], [2 / 3, "⅔"], [0.75, "¾"], [0.875, "⅞"]
-      ];
-      let best = "";
-      let bestDiff = 0.04;
-      for (const [v, s] of fracs) {
-        const d = Math.abs(frac - v);
-        if (d < bestDiff) { bestDiff = d; best = s; }
-      }
-      if (best === "" && frac > 0.04) {
-        const rounded = Math.round(n * 100) / 100;
-        return String(rounded);
-      }
-      if (whole === 0) return best || String(Math.round(n * 100) / 100);
-      return best ? `${whole}${best}` : String(whole);
+    function removeFromCart(id) {
+      state.cart.delete(id);
+      saveCart();
+      render();
     }
 
-    function scaleIngredient(text, multiplier) {
-      if (multiplier === 1) return text;
-      return text.replace(/(\d+\s*)?([¼½¾⅓⅔⅛⅜⅝⅞])|(\d+\s+\d+\/\d+)|(\d+\/\d+)|(\d+\.\d+)|(\d+)/g, (match, wholeBeforeUnicode, unicodeFrac, mixed, plainFrac, decimal, integer) => {
-        let value = null;
-        if (unicodeFrac) {
-          value = (wholeBeforeUnicode ? parseFloat(wholeBeforeUnicode) : 0) + UNICODE_FRAC[unicodeFrac];
-        } else if (mixed) {
-          const parts = mixed.trim().split(/\s+/);
-          const [a, b] = parts[1].split("/").map(Number);
-          value = parseFloat(parts[0]) + a / b;
-        } else if (plainFrac) {
-          const [a, b] = plainFrac.split("/").map(Number);
-          value = a / b;
-        } else if (decimal) {
-          value = parseFloat(decimal);
-        } else if (integer) {
-          value = parseFloat(integer);
-        }
-        if (value == null || !Number.isFinite(value)) return match;
-        return formatAmount(value * multiplier);
-      });
+    function clearCart() {
+      state.cart.clear();
+      saveCart();
+      render();
     }
 
-    function baseServings(r) {
-      if (!r.serves) return 4;
-      const m = String(r.serves).match(/(\d+)/);
-      return m ? Number(m[1]) : 4;
-    }
-
-    /** Absolute serving targets for the shop sheet — always includes 2. */
-    function servingChoices(base) {
-      const set = new Set([2, base, base * 2, base * 3].map((n) => Math.max(1, Math.round(n))));
-      return [...set].sort((a, b) => a - b);
-    }
-
-    function shopMultiplierFor(r) {
-      const base = baseServings(r);
-      const target = state.shopServings == null ? base : state.shopServings;
-      return target / base;
+    function openCart() {
+      state.cartOpen = true;
+      render();
     }
 
     async function requestWakeLock() {
@@ -1967,7 +1984,6 @@
     function filteredRecipes() {
       const q = state.query.trim().toLowerCase();
       return RECIPES.filter(r => {
-        if (state.favOnly && !state.favorites.has(r.id)) return false;
         if (state.category && r.category !== state.category) return false;
         if (!q) return true;
         const hay = [r.title, r.from, r.fact || "", ...(r.ingredients || []), ...(r.steps || []), r.notes || ""].join(" ").toLowerCase();
@@ -1982,10 +1998,10 @@
 
     function recipeCard(r) {
       const cat = catById(r.category);
-      const on = state.favorites.has(r.id);
+      const on = state.cart.has(r.id);
       return `
         <article class="recipe-card" role="button" tabindex="0" data-open="${r.id}">
-          <button class="heart ${on ? "on" : ""}" type="button" aria-label="${on ? "Remove from saved" : "Save recipe"}" data-fav="${r.id}">♥</button>
+          <button class="cart-btn ${on ? "on" : ""}" type="button" aria-label="${on ? "Remove from shopping cart" : "Add ingredients to shopping cart"}" data-cart-toggle="${r.id}">${CART_ICON}</button>
           <div class="thumb"><img src="${escapeHtml(r.image)}" alt="" loading="lazy" /></div>
           <div class="body">
             <div class="cat-tag">${cat?.short || ""}</div>
@@ -1998,17 +2014,15 @@
     function renderHome() {
       const featured = ["breakfast-bake", "spaghetti-meatballs", "barbeque-ribs", "bob-armstrong-dip", "sugar-cookies", "hawaiian-mai-tai"]
         .map(id => RECIPES.find(r => r.id === id)).filter(Boolean);
-      const list = state.query || state.favOnly ? filteredRecipes() : featured;
-      const heading = state.favOnly
-        ? { title: "Saved recipes", sub: "Your kitchen shortlist" }
-        : state.query
-          ? { title: "Search results", sub: `${filteredRecipes().length} match${filteredRecipes().length === 1 ? "" : "es"}` }
-          : { title: "Family favorites", sub: "Start with a classic from the collection" };
+      const list = state.query ? filteredRecipes() : featured;
+      const heading = state.query
+        ? { title: "Search results", sub: `${filteredRecipes().length} match${filteredRecipes().length === 1 ? "" : "es"}` }
+        : { title: "Family favorites", sub: "Start with a classic from the collection" };
 
       $("#view-home").innerHTML = `
-        ${!state.query && !state.favOnly ? `
+        ${!state.query ? `
         <section class="hero" aria-label="Marino Family Recipes">
-          <div class="hero-media"><img src="media/cover.jpg?v=7" alt="Marino family recipe collection" /></div>
+          <div class="hero-media"><img src="media/cover.jpg?v=8" alt="Marino family recipe collection" /></div>
           <div class="hero-inner">
             <div class="hero-year">Collection · 2021</div>
             <h1>Marino<em>Family Recipes</em></h1>
@@ -2046,7 +2060,7 @@
         <div class="recipe-grid">
           ${list.length ? list.map(recipeCard).join("") : `<div class="empty">No recipes match. Try another search.</div>`}
         </div>
-        ${!state.query && !state.favOnly ? `
+        ${!state.query ? `
         <div class="section-head" style="margin-top:2.5rem">
           <div>
             <h2>All ${RECIPES.length} recipes</h2>
@@ -2104,7 +2118,7 @@
             ${timing.length ? `<div class="timing">${timing.map(t => `<span>${escapeHtml(t)}</span>`).join("")}</div>` : ""}
             <div class="detail-actions">
               <button class="btn btn-cook" type="button" data-cook>Cooking view</button>
-              <button class="btn btn-shop" type="button" data-shop>Shop this recipe</button>
+              <button class="btn btn-shop" type="button" data-add-cart>${state.cart.has(r.id) ? "In cart · View" : "Add to cart"}</button>
               <button class="btn" type="button" onclick="window.print()">Print</button>
             </div>
           </div>
@@ -2133,40 +2147,59 @@
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
 
-    function renderShopSheet(r) {
-      const base = baseServings(r);
-      const target = state.shopServings == null ? base : state.shopServings;
-      const mult = target / base;
-      const choices = servingChoices(base);
-      const items = r.ingredients.map((ing) => scaleIngredient(ing, mult));
+    function renderCartSheet() {
+      const recipes = cartRecipes();
+      const itemCount = cartItemCount();
+      let itemIndex = 0;
       return `
-        <div class="sheet-backdrop" data-close-shop>
-          <div class="sheet" role="dialog" aria-modal="true" aria-label="Shop this recipe" onclick="event.stopPropagation()">
+        <div class="sheet-backdrop" data-close-cart>
+          <div class="sheet" role="dialog" aria-modal="true" aria-label="Shopping cart" onclick="event.stopPropagation()">
             <div class="sheet-head">
               <div>
-                <h2>Shop this recipe</h2>
-                <p>${escapeHtml(r.title)} · grocery checklist</p>
+                <h2>Shopping cart</h2>
+                <p>${recipes.length
+                  ? `${recipes.length} recipe${recipes.length === 1 ? "" : "s"} · ${itemCount} ingredient${itemCount === 1 ? "" : "s"}`
+                  : "Add recipes from any card"}</p>
               </div>
-              <button class="sheet-close" type="button" data-close-shop aria-label="Close">×</button>
+              <button class="sheet-close" type="button" data-close-cart aria-label="Close">×</button>
             </div>
-            <div class="servings-row">
-              <label>Servings</label>
-              ${choices.map((n) => `
-                <button class="chip ${target === n ? "active" : ""}" type="button" data-servings="${n}">${n}</button>
-              `).join("")}
-              <div class="base-note">Scaled from about ${base} servings${r.serves ? ` (recipe lists ${escapeHtml(String(r.serves))})` : ""}. Showing list for ${target}.</div>
-            </div>
-            <ul class="shop-list">
-              ${items.map((ing, i) => `
-                <li>
-                  <input type="checkbox" id="shop-${i}" />
-                  <label for="shop-${i}">${escapeHtml(ing)}</label>
-                </li>`).join("")}
-            </ul>
+            ${recipes.length === 0 ? `
+              <div class="cart-empty">Your cart is empty. Tap the cart icon on a recipe to add all of its ingredients.</div>
+            ` : `
+              <div class="cart-section-label">Recipes selected</div>
+              <ul class="cart-recipes">
+                ${recipes.map((r) => `
+                  <li>
+                    <div>
+                      <span class="cart-recipe-title">${escapeHtml(r.title)}</span>
+                      <span class="cart-recipe-meta">${r.ingredients.length} ingredient${r.ingredients.length === 1 ? "" : "s"}</span>
+                    </div>
+                    <button class="remove-recipe" type="button" data-cart-remove="${r.id}" aria-label="Remove ${escapeHtml(r.title)}">×</button>
+                  </li>`).join("")}
+              </ul>
+              <div class="cart-section-label">All ingredients</div>
+              ${recipes.map((r) => `
+                <div class="cart-recipe-block">
+                  <h3>${escapeHtml(r.title)}</h3>
+                  <ul class="shop-list">
+                    ${r.ingredients.map((ing) => {
+                      const i = itemIndex++;
+                      return `
+                      <li>
+                        <input type="checkbox" id="cart-item-${i}" />
+                        <label for="cart-item-${i}">${escapeHtml(ing)}</label>
+                      </li>`;
+                    }).join("")}
+                  </ul>
+                </div>`).join("")}
+            `}
             <div class="shop-actions">
-              <button class="btn btn-primary" type="button" data-copy-shop>Copy list</button>
-              <button class="btn" type="button" data-print-shop>Print list</button>
-              <button class="btn" type="button" data-close-shop>Done</button>
+              ${recipes.length ? `
+                <button class="btn btn-primary" type="button" data-copy-cart>Copy list</button>
+                <button class="btn" type="button" data-print-cart>Print list</button>
+                <button class="btn btn-danger" type="button" data-clear-cart>Clear cart</button>
+              ` : ""}
+              <button class="btn" type="button" data-close-cart>Done</button>
             </div>
           </div>
         </div>`;
@@ -2215,16 +2248,11 @@
       const host = $("#overlays");
       const r = RECIPES.find(x => x.id === state.recipeId);
       document.body.classList.toggle("cook-open", state.cookOpen);
-      if (!r) {
-        host.innerHTML = "";
-        releaseWakeLock();
-        return;
-      }
       let html = "";
-      if (state.shopOpen) html += renderShopSheet(r);
-      if (state.cookOpen) html += renderCookMode(r);
+      if (state.cartOpen) html += renderCartSheet();
+      if (state.cookOpen && r) html += renderCookMode(r);
       host.innerHTML = html;
-      if (state.cookOpen) requestWakeLock();
+      if (state.cookOpen && r) requestWakeLock();
       else releaseWakeLock();
     }
 
@@ -2234,15 +2262,15 @@
       $$(".bottom-nav button").forEach(b => {
         const nav = b.dataset.nav;
         const active =
-          (nav === "home" && view === "home" && !state.favOnly) ||
-          (nav === "browse" && view === "browse") ||
-          (nav === "favorites" && state.favOnly && view === "home");
+          (nav === "home" && view === "home" && !state.cartOpen) ||
+          (nav === "browse" && view === "browse" && !state.cartOpen) ||
+          (nav === "cart" && state.cartOpen);
         b.classList.toggle("active", active);
       });
     }
 
     function render() {
-      $("#favFilter").setAttribute("aria-pressed", state.favOnly ? "true" : "false");
+      updateCartBadge();
       if (state.view === "home") renderHome();
       else if (state.view === "browse") renderBrowse();
       else if (state.view === "recipe") renderRecipe();
@@ -2254,11 +2282,10 @@
     function openRecipe(id) {
       state.recipeId = id;
       state.view = "recipe";
-      state.shopOpen = false;
+      state.cartOpen = false;
       state.cookOpen = false;
       state.cookStep = 0;
       state.cookTab = "steps";
-      state.shopServings = null;
       render();
       history.pushState({ view: "recipe", id }, "", `#recipe/${id}`);
     }
@@ -2267,18 +2294,17 @@
       state.view = "home";
       state.category = null;
       state.recipeId = null;
-      state.shopOpen = false;
+      state.cartOpen = false;
       state.cookOpen = false;
-      if (!state.favOnly) history.pushState({ view: "home" }, "", "#");
+      history.pushState({ view: "home" }, "", "#");
       render();
     }
 
     function goBrowse(catId = null) {
       state.view = "browse";
       state.category = catId || null;
-      state.favOnly = false;
       state.recipeId = null;
-      state.shopOpen = false;
+      state.cartOpen = false;
       state.cookOpen = false;
       history.pushState({ view: "browse", category: state.category }, "", state.category ? `#browse/${state.category}` : "#browse");
       render();
@@ -2292,17 +2318,14 @@
           if (e.key === "Enter" || e.key === " ") { e.preventDefault(); open(); }
         });
       });
-      $$("[data-fav]").forEach(el => el.addEventListener("click", e => toggleFav(el.dataset.fav, e)));
+      $$("[data-cart-toggle]").forEach(el => el.addEventListener("click", e => toggleCartRecipe(el.dataset.cartToggle, e)));
       $$("[data-cat]").forEach(el => el.addEventListener("click", () => goBrowse(el.dataset.cat || null)));
       $$("[data-nav]").forEach(el => el.addEventListener("click", () => {
         const nav = el.dataset.nav;
         if (nav === "home") {
-          state.favOnly = false; state.query = ""; $("#search").value = ""; goHome();
+          state.query = ""; $("#search").value = ""; goHome();
         } else if (nav === "browse") goBrowse(null);
-        else if (nav === "favorites") {
-          state.favOnly = true; state.query = ""; $("#search").value = "";
-          state.view = "home"; history.pushState({ view: "favorites" }, "", "#saved"); render();
-        }
+        else if (nav === "cart") openCart();
       }));
       const back = $("[data-back]");
       if (back) back.addEventListener("click", () => {
@@ -2310,30 +2333,28 @@
         else goBrowse(state.category);
       });
 
-      $$("[data-shop]").forEach(el => el.addEventListener("click", () => {
-        const r = RECIPES.find(x => x.id === state.recipeId);
-        state.shopOpen = true;
-        state.shopServings = r ? baseServings(r) : 4;
-        renderOverlays();
-        bindDynamic();
+      $$("[data-add-cart]").forEach(el => el.addEventListener("click", () => {
+        if (state.recipeId) state.cart.add(state.recipeId);
+        saveCart();
+        openCart();
       }));
-      $$("[data-close-shop]").forEach(el => el.addEventListener("click", () => {
-        state.shopOpen = false;
-        renderOverlays();
-        bindDynamic();
+      $$("[data-close-cart]").forEach(el => el.addEventListener("click", () => {
+        state.cartOpen = false;
+        render();
       }));
-      $$("[data-servings]").forEach(el => el.addEventListener("click", () => {
-        state.shopServings = Number(el.dataset.servings) || baseServings(RECIPES.find(x => x.id === state.recipeId) || {});
-        renderOverlays();
-        bindDynamic();
+      $$("[data-cart-remove]").forEach(el => el.addEventListener("click", () => {
+        removeFromCart(el.dataset.cartRemove);
       }));
-      $$("[data-copy-shop]").forEach(el => el.addEventListener("click", async () => {
-        const r = RECIPES.find(x => x.id === state.recipeId);
-        if (!r) return;
-        const mult = shopMultiplierFor(r);
-        const target = state.shopServings == null ? baseServings(r) : state.shopServings;
-        const lines = r.ingredients.map((ing) => `☐ ${scaleIngredient(ing, mult)}`);
-        const text = `${r.title} — shopping list (${target} servings)\n\n${lines.join("\n")}`;
+      $$("[data-clear-cart]").forEach(el => el.addEventListener("click", () => {
+        clearCart();
+      }));
+      $$("[data-copy-cart]").forEach(el => el.addEventListener("click", async () => {
+        const recipes = cartRecipes();
+        if (!recipes.length) return;
+        const blocks = recipes.map((r) =>
+          `${r.title}\n${r.ingredients.map((ing) => `☐ ${ing}`).join("\n")}`
+        );
+        const text = `Marino Family Recipes — shopping list\n\n${blocks.join("\n\n")}`;
         try {
           await navigator.clipboard.writeText(text);
           el.textContent = "Copied!";
@@ -2342,16 +2363,17 @@
           alert(text);
         }
       }));
-      $$("[data-print-shop]").forEach(el => el.addEventListener("click", () => {
-        const r = RECIPES.find(x => x.id === state.recipeId);
-        if (!r) return;
-        const mult = shopMultiplierFor(r);
-        const target = state.shopServings == null ? baseServings(r) : state.shopServings;
-        const lines = r.ingredients.map((ing) => `<li>${escapeHtml(scaleIngredient(ing, mult))}</li>`).join("");
+      $$("[data-print-cart]").forEach(el => el.addEventListener("click", () => {
+        const recipes = cartRecipes();
+        if (!recipes.length) return;
+        const body = recipes.map((r) => `
+          <h2>${escapeHtml(r.title)}</h2>
+          <ul>${r.ingredients.map((ing) => `<li>${escapeHtml(ing)}</li>`).join("")}</ul>
+        `).join("");
         const w = window.open("", "_blank");
-        w.document.write(`<html><head><title>${escapeHtml(r.title)} shopping list</title>
-          <style>body{font-family:system-ui,sans-serif;padding:24px} h1{font-size:22px} li{margin:8px 0;font-size:16px}</style></head>
-          <body><h1>${escapeHtml(r.title)}</h1><p>Shopping list · ${target} servings</p><ul>${lines}</ul></body></html>`);
+        w.document.write(`<html><head><title>Shopping list</title>
+          <style>body{font-family:system-ui,sans-serif;padding:24px} h1{font-size:22px} h2{font-size:18px;margin-top:1.5rem} li{margin:8px 0;font-size:16px}</style></head>
+          <body><h1>Shopping list</h1><p>${recipes.length} recipe${recipes.length === 1 ? "" : "s"} · ${cartItemCount()} ingredients</p>${body}</body></html>`);
         w.document.close();
         w.focus();
         w.print();
@@ -2397,13 +2419,9 @@
       if (state.view === "recipe") state.view = state.category ? "browse" : "home";
       render();
     });
-    $("#favFilter").addEventListener("click", () => {
-      state.favOnly = !state.favOnly;
-      if (state.view === "recipe") state.view = "home";
-      render();
-    });
+    $("#cartToggle").addEventListener("click", () => openCart());
     $("#brandHome").addEventListener("click", () => {
-      state.favOnly = false; state.query = ""; $("#search").value = ""; goHome();
+      state.query = ""; $("#search").value = ""; goHome();
     });
     window.addEventListener("scroll", () => {
       $("#topbar").classList.toggle("scrolled", window.scrollY > 8);
@@ -2412,16 +2430,18 @@
 
     function routeFromHash() {
       const hash = location.hash.replace(/^#/, "");
+      state.cartOpen = false;
       if (hash.startsWith("recipe/")) {
-        state.recipeId = hash.slice(7); state.view = "recipe"; state.favOnly = false;
+        state.recipeId = hash.slice(7); state.view = "recipe";
       } else if (hash.startsWith("browse/")) {
-        state.category = hash.slice(7) || null; state.view = "browse"; state.favOnly = false;
+        state.category = hash.slice(7) || null; state.view = "browse";
       } else if (hash === "browse") {
-        state.category = null; state.view = "browse"; state.favOnly = false;
-      } else if (hash === "saved") {
-        state.favOnly = true; state.view = "home";
+        state.category = null; state.view = "browse";
+      } else if (hash === "cart" || hash === "saved") {
+        state.view = state.view === "recipe" ? "home" : (state.view || "home");
+        state.cartOpen = true;
       } else {
-        state.view = "home"; state.category = null; state.favOnly = false;
+        state.view = "home"; state.category = null;
       }
       render();
     }
