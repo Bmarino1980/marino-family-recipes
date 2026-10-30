@@ -1,0 +1,1872 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#000000" />
+  <meta name="description" content="Marino Family Recipe Collection — treasured recipes from our kitchen to yours." />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Marino Recipes" />
+  <meta name="application-name" content="Marino Recipes" />
+  <title>Marino Family Recipes</title>
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png" />
+  <link rel="icon" type="image/png" sizes="512x512" href="icons/icon-512.png" />
+  <link rel="apple-touch-icon" href="icons/icon-180.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --ink: #142018;
+      --ink-soft: #3a4740;
+      --muted: #67756c;
+      --brand: #183024;
+      --leaf: #4d6a52;
+      --gold: #c4a35a;
+      --gold-soft: #e0c789;
+      --paper: #f4f2ec;
+      --line: rgba(20, 32, 24, 0.12);
+      --danger: #9a3f2f;
+      --shadow: 0 22px 60px rgba(12, 22, 16, 0.16);
+      --nav-h: 64px;
+      --safe-b: env(safe-area-inset-bottom, 0px);
+      --font-display: "Fraunces", Georgia, serif;
+      --font-body: "Figtree", system-ui, sans-serif;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: var(--font-body);
+      color: var(--ink);
+      background:
+        radial-gradient(900px 480px at 85% -5%, rgba(196, 163, 90, 0.16), transparent 55%),
+        radial-gradient(1000px 520px at -5% 0%, rgba(77, 106, 82, 0.18), transparent 50%),
+        linear-gradient(180deg, #e4ebe4 0%, var(--paper) 40%, #efeae1 100%);
+      background-attachment: fixed;
+      min-height: 100dvh;
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+    }
+    img { max-width: 100%; display: block; }
+    button, input { font: inherit; }
+    button { cursor: pointer; border: 0; background: none; color: inherit; }
+
+    .app { min-height: 100dvh; display: flex; flex-direction: column; }
+
+    .topbar {
+      position: sticky; top: 0; z-index: 40;
+      height: var(--nav-h);
+      display: flex; align-items: center; gap: 0.75rem;
+      padding: 0 1rem; padding-top: env(safe-area-inset-top, 0);
+      background: rgba(244, 242, 236, 0.78);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid transparent;
+      transition: border-color .25s, box-shadow .25s;
+    }
+    .topbar.scrolled {
+      border-color: var(--line);
+      box-shadow: 0 10px 28px rgba(12, 22, 16, 0.07);
+    }
+    .topbar-brand {
+      font-family: var(--font-display);
+      font-weight: 700; font-size: 1.15rem;
+      color: var(--brand); white-space: nowrap;
+    }
+    .topbar-brand span { color: var(--gold); font-weight: 500; }
+    .search-wrap { flex: 1; max-width: 420px; margin-left: auto; position: relative; }
+    .search-wrap input {
+      width: 100%; border: 1px solid var(--line);
+      background: rgba(255,255,255,.72); border-radius: 999px;
+      padding: .65rem 1rem .65rem 2.4rem; outline: none;
+    }
+    .search-wrap input:focus {
+      border-color: var(--leaf);
+      box-shadow: 0 0 0 3px rgba(77, 106, 82, 0.18);
+    }
+    .search-wrap svg {
+      position: absolute; left: .85rem; top: 50%; transform: translateY(-50%);
+      width: 16px; height: 16px; opacity: .55; pointer-events: none;
+    }
+    .fav-toggle {
+      width: 42px; height: 42px; border-radius: 50%;
+      display: grid; place-items: center;
+      border: 1px solid var(--line); background: rgba(255,255,255,.65); flex-shrink: 0;
+    }
+    .fav-toggle[aria-pressed="true"] {
+      background: var(--brand); color: var(--paper); border-color: var(--brand);
+    }
+
+    main { flex: 1; width: min(1180px, 100%); margin: 0 auto; padding: 0 1rem 5.5rem; }
+    .view { display: none; animation: fadeUp .45s ease both; }
+    .view.active { display: block; }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(14px); }
+      to { opacity: 1; transform: none; }
+    }
+    @keyframes ken {
+      from { transform: scale(1.05); }
+      to { transform: scale(1); }
+    }
+
+    .hero {
+      position: relative;
+      min-height: min(88dvh, 780px);
+      margin: .75rem 0 2.25rem;
+      border-radius: 28px;
+      overflow: hidden;
+      color: #f7f4ee;
+      display: grid;
+      align-items: end;
+      isolation: isolate;
+      box-shadow: var(--shadow);
+    }
+    .hero-media {
+      position: absolute; inset: 0; z-index: -2;
+    }
+    .hero-media img {
+      width: 100%; height: 100%; object-fit: cover;
+      animation: ken 18s ease-out both;
+    }
+    .hero::after {
+      content: "";
+      position: absolute; inset: 0; z-index: -1;
+      background:
+        linear-gradient(90deg, rgba(10, 18, 14, 0.82) 0%, rgba(10, 18, 14, 0.45) 55%, rgba(10, 18, 14, 0.25) 100%),
+        linear-gradient(180deg, rgba(10, 18, 14, 0.15) 0%, rgba(10, 18, 14, 0.78) 100%);
+    }
+    .hero-inner {
+      padding: clamp(1.5rem, 5vw, 3.5rem);
+      max-width: 34rem;
+    }
+    .hero-year {
+      display: inline-block;
+      font-size: .78rem; letter-spacing: .22em; text-transform: uppercase;
+      color: var(--gold-soft); margin-bottom: .85rem;
+    }
+    .hero h1 {
+      font-family: var(--font-display);
+      font-size: clamp(3.2rem, 12vw, 6.2rem);
+      line-height: .92; margin: 0 0 .6rem; font-weight: 700;
+    }
+    .hero h1 em {
+      font-style: italic; font-weight: 500; color: var(--gold-soft);
+      display: block; font-size: .42em; letter-spacing: .08em; margin-top: .35em;
+    }
+    .hero p {
+      margin: 0 0 1.5rem; color: rgba(247, 244, 238, .88);
+      font-size: 1.05rem; max-width: 30ch;
+    }
+    .hero-actions { display: flex; flex-wrap: wrap; gap: .7rem; }
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center; gap: .4rem;
+      padding: .85rem 1.25rem; border-radius: 999px; font-weight: 600;
+      transition: transform .2s, background .2s;
+    }
+    .btn:active { transform: scale(.97); }
+    .btn-primary { background: var(--gold); color: #1a1608; }
+    .btn-primary:hover { background: var(--gold-soft); }
+    .btn-ghost {
+      background: rgba(255,255,255,.12); color: #f7f4ee;
+      border: 1px solid rgba(255,255,255,.28);
+    }
+
+    .section-head {
+      display: flex; align-items: end; justify-content: space-between; gap: 1rem; margin: 0 0 1rem;
+    }
+    .section-head h2 {
+      font-family: var(--font-display);
+      font-size: clamp(1.6rem, 4vw, 2.1rem);
+      margin: 0; color: var(--brand); line-height: 1.15;
+    }
+    .section-head p { margin: .25rem 0 0; color: var(--muted); font-size: .95rem; }
+
+    .cat-rail {
+      display: grid; grid-auto-flow: column; grid-auto-columns: minmax(180px, 1fr);
+      gap: .85rem; overflow-x: auto; padding: .25rem 0 1.35rem;
+      scroll-snap-type: x mandatory; scrollbar-width: none;
+    }
+    .cat-rail::-webkit-scrollbar { display: none; }
+    .cat-chip {
+      scroll-snap-align: start;
+      position: relative; overflow: hidden;
+      text-align: left; min-height: 148px; border-radius: 20px;
+      color: #f7f4ee; isolation: isolate;
+      transition: transform .22s, box-shadow .22s;
+    }
+    .cat-chip img {
+      position: absolute; inset: 0; width: 100%; height: 100%;
+      object-fit: cover; z-index: -2; transition: transform .5s;
+    }
+    .cat-chip::after {
+      content: ""; position: absolute; inset: 0; z-index: -1;
+      background: linear-gradient(180deg, rgba(8,14,10,.15), rgba(8,14,10,.82));
+    }
+    .cat-chip:hover { transform: translateY(-3px); box-shadow: 0 16px 36px rgba(12,22,16,.18); }
+    .cat-chip:hover img { transform: scale(1.06); }
+    .cat-chip .cat-copy {
+      position: absolute; left: 0; right: 0; bottom: 0;
+      padding: 1rem 1.05rem; display: grid; gap: .2rem;
+    }
+    .cat-chip strong {
+      font-family: var(--font-display); font-size: 1.15rem; line-height: 1.15;
+    }
+    .cat-chip span { font-size: .8rem; opacity: .88; }
+
+    .recipe-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(min(100%, 250px), 1fr));
+      gap: 1rem;
+    }
+    .recipe-card {
+      text-align: left; border-radius: 22px; overflow: hidden;
+      background: rgba(255,255,255,.7); border: 1px solid var(--line);
+      display: flex; flex-direction: column;
+      transition: transform .22s, box-shadow .22s;
+      position: relative;
+    }
+    .recipe-card:hover, .recipe-card:focus-visible {
+      transform: translateY(-4px);
+      box-shadow: 0 18px 40px rgba(12, 22, 16, .14);
+    }
+    .recipe-card .thumb {
+      aspect-ratio: 4 / 3; overflow: hidden; background: #d7ddd7;
+    }
+    .recipe-card .thumb img {
+      width: 100%; height: 100%; object-fit: cover;
+      transition: transform .55s ease;
+    }
+    .recipe-card:hover .thumb img { transform: scale(1.05); }
+    .recipe-card .body { padding: 1rem 1.05rem 1.15rem; display: grid; gap: .4rem; flex: 1; }
+    .recipe-card .cat-tag {
+      font-size: .72rem; letter-spacing: .08em; text-transform: uppercase;
+      color: var(--leaf); font-weight: 600;
+    }
+    .recipe-card h3 {
+      font-family: var(--font-display); font-size: 1.28rem;
+      margin: 0; line-height: 1.2; color: var(--brand);
+    }
+    .recipe-card .meta { margin-top: auto; font-size: .88rem; color: var(--muted); }
+    .heart {
+      position: absolute; top: .75rem; right: .75rem; z-index: 2;
+      width: 36px; height: 36px; border-radius: 50%;
+      display: grid; place-items: center; color: var(--muted);
+      background: rgba(255,255,255,.9); border: 1px solid rgba(255,255,255,.5);
+      backdrop-filter: blur(6px);
+    }
+    .heart.on { color: var(--danger); }
+
+    .empty { text-align: center; padding: 3rem 1rem; color: var(--muted); }
+
+    .detail-back {
+      display: inline-flex; align-items: center; gap: .4rem;
+      margin: 1rem 0 1rem; color: var(--leaf); font-weight: 600;
+    }
+    .detail-hero {
+      position: relative; border-radius: 28px; overflow: hidden;
+      min-height: min(62dvh, 560px); color: #f7f4ee;
+      margin-bottom: 1.5rem; box-shadow: var(--shadow);
+      display: grid; align-items: end; isolation: isolate;
+    }
+    .detail-hero img {
+      position: absolute; inset: 0; width: 100%; height: 100%;
+      object-fit: cover; z-index: -2; animation: ken 14s ease-out both;
+    }
+    .detail-hero::after {
+      content: ""; position: absolute; inset: 0; z-index: -1;
+      background: linear-gradient(180deg, rgba(8,14,10,.05) 20%, rgba(8,14,10,.88) 100%);
+    }
+    .detail-hero .content { padding: clamp(1.3rem, 4vw, 2.4rem); max-width: 40rem; }
+    .detail-hero .cat-tag {
+      color: var(--gold-soft); letter-spacing: .12em; text-transform: uppercase;
+      font-size: .75rem; font-weight: 600;
+    }
+    .detail-hero h1 {
+      font-family: var(--font-display);
+      font-size: clamp(2.1rem, 7vw, 3.5rem);
+      margin: .4rem 0 .5rem; line-height: 1.05;
+    }
+    .detail-hero .from { opacity: .88; margin-bottom: 1rem; }
+    .timing { display: flex; flex-wrap: wrap; gap: .5rem; }
+    .timing span {
+      background: rgba(255,255,255,.12); border: 1px solid rgba(255,255,255,.18);
+      border-radius: 999px; padding: .35rem .75rem; font-size: .85rem;
+    }
+    .detail-actions { display: flex; flex-wrap: wrap; gap: .6rem; margin-top: 1.15rem; }
+    .detail-actions .btn {
+      background: rgba(255,255,255,.12); border: 1px solid rgba(255,255,255,.22); color: #f7f4ee;
+    }
+    .detail-actions .btn.on { background: var(--gold); color: #1a1608; border-color: var(--gold); }
+
+    .fact {
+      margin: 0 0 1.5rem; padding: 1.1rem 1.2rem;
+      border-left: 3px solid var(--gold);
+      background: rgba(255,255,255,.58); border-radius: 0 16px 16px 0; color: var(--ink-soft);
+    }
+    .fact strong {
+      display: block; font-size: .75rem; letter-spacing: .12em; text-transform: uppercase;
+      color: var(--gold); margin-bottom: .35rem;
+    }
+
+    .detail-layout { display: grid; gap: 1.5rem; }
+    @media (min-width: 820px) {
+      .detail-layout { grid-template-columns: .95fr 1.15fr; align-items: start; }
+    }
+    .panel {
+      background: rgba(255,255,255,.62); border: 1px solid var(--line);
+      border-radius: 22px; padding: 1.25rem 1.3rem 1.4rem;
+    }
+    .panel h2 {
+      font-family: var(--font-display); font-size: 1.35rem;
+      margin: 0 0 .9rem; color: var(--brand);
+    }
+    .ingredients { list-style: none; padding: 0; margin: 0; display: grid; gap: .55rem; }
+    .ingredients li {
+      display: grid; grid-template-columns: 22px 1fr; gap: .55rem; align-items: start;
+      padding-bottom: .55rem; border-bottom: 1px dashed var(--line);
+    }
+    .ingredients li:last-child { border-bottom: 0; padding-bottom: 0; }
+    .ingredients input { margin-top: .2rem; accent-color: var(--leaf); width: 16px; height: 16px; }
+    .ingredients input:checked + label { text-decoration: line-through; color: var(--muted); }
+    .steps { margin: 0; padding-left: 1.2rem; display: grid; gap: .85rem; }
+    .steps li::marker { color: var(--leaf); font-weight: 700; font-family: var(--font-display); }
+    .note {
+      margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--line);
+      color: var(--ink-soft); font-size: .95rem;
+    }
+    .note strong { color: var(--brand); }
+
+    .bottom-nav {
+      position: fixed; left: 50%; transform: translateX(-50%);
+      bottom: calc(.75rem + var(--safe-b)); z-index: 50;
+      display: flex; gap: .35rem; padding: .4rem;
+      background: rgba(24, 48, 36, .93); color: #f7f4ee;
+      border-radius: 999px; box-shadow: 0 12px 40px rgba(8, 18, 12, .38);
+      backdrop-filter: blur(10px); width: min(420px, calc(100% - 1.5rem));
+    }
+    .bottom-nav button {
+      flex: 1; border-radius: 999px; padding: .7rem .4rem;
+      font-size: .78rem; font-weight: 600; opacity: .7;
+      display: grid; gap: .15rem; justify-items: center;
+    }
+    .bottom-nav button svg { width: 18px; height: 18px; }
+    .bottom-nav button.active { opacity: 1; background: rgba(255,255,255,.12); }
+
+    @media (min-width: 980px) {
+      .bottom-nav { display: none; }
+      main { padding-bottom: 3rem; }
+    }
+    @media (max-width: 640px) {
+      .search-wrap { max-width: none; }
+      .topbar-brand .full { display: none; }
+      .hero { min-height: min(78dvh, 640px); border-radius: 20px; }
+      .detail-hero { border-radius: 20px; min-height: min(54dvh, 420px); }
+    }
+    .install-btn {
+      display: none;
+      align-items: center;
+      gap: .35rem;
+      white-space: nowrap;
+      padding: .55rem .9rem;
+      border-radius: 999px;
+      background: #000;
+      color: #fff;
+      font-size: .82rem;
+      font-weight: 600;
+      border: 1px solid rgba(255,255,255,.12);
+      flex-shrink: 0;
+    }
+    .install-btn.show { display: inline-flex; }
+    .install-btn .dot {
+      width: 14px; height: 14px; border-radius: 50%;
+      background: #e23b2f;
+      box-shadow: inset 0 -2px 0 rgba(0,0,0,.15);
+      position: relative;
+    }
+    .install-btn .dot::after {
+      content: "M";
+      position: absolute; inset: 0;
+      display: grid; place-items: center;
+      font-size: 8px; font-weight: 800; color: #fff; line-height: 1;
+    }
+
+    @media print {
+      .topbar, .bottom-nav, .detail-back, .detail-actions, .heart, .fav-toggle, .install-btn { display: none !important; }
+      body { background: white; }
+      .detail-hero { min-height: 240px; box-shadow: none; }
+      .panel { break-inside: avoid; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header class="topbar" id="topbar">
+      <button class="topbar-brand" id="brandHome" type="button" aria-label="Home">
+        Marino <span class="full">Family Recipes</span>
+      </button>
+      <div class="search-wrap">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <circle cx="11" cy="11" r="7"></circle>
+          <path d="M20 20l-3.5-3.5"></path>
+        </svg>
+        <input id="search" type="search" placeholder="Search recipes, ingredients…" autocomplete="off" enterkeyhint="search" />
+      </div>
+      <button class="install-btn" id="installBtn" type="button" title="Install app">
+        <span class="dot" aria-hidden="true"></span>
+        Install
+      </button>
+      <button class="fav-toggle" id="favFilter" type="button" aria-pressed="false" title="Show favorites" aria-label="Show favorites">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+          <path d="M12 21s-6.7-4.35-9.33-8.1C.8 10.2 1.2 6.8 3.9 5.2 6.1 3.9 8.7 4.5 10.2 6.3L12 8.4l1.8-2.1c1.5-1.8 4.1-2.4 6.3-1.1 2.7 1.6 3.1 5 1.23 7.7C18.7 16.65 12 21 12 21z"/>
+        </svg>
+      </button>
+    </header>
+
+    <main>
+      <section class="view active" id="view-home" aria-label="Home"></section>
+      <section class="view" id="view-browse" aria-label="Browse"></section>
+      <section class="view" id="view-recipe" aria-label="Recipe"></section>
+    </main>
+
+    <nav class="bottom-nav" aria-label="Primary">
+      <button type="button" data-nav="home" class="active">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 10.5 12 4l8 6.5V20a1 1 0 0 1-1 1h-5v-6H10v6H5a1 1 0 0 1-1-1v-9.5z"/></svg>
+        Home
+      </button>
+      <button type="button" data-nav="browse">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h10"/></svg>
+        Browse
+      </button>
+      <button type="button" data-nav="favorites">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 21s-6.7-4.35-9.33-8.1C.8 10.2 1.2 6.8 3.9 5.2 6.1 3.9 8.7 4.5 10.2 6.3L12 8.4l1.8-2.1c1.5-1.8 4.1-2.4 6.3-1.1 2.7 1.6 3.1 5 1.23 7.7C18.7 16.65 12 21 12 21z"/></svg>
+        Saved
+      </button>
+    </nav>
+  </div>
+
+  <script>
+    const CATEGORIES = [
+      { id: "breakfast", name: "Breakfast & Breads", blurb: "Welcome the morning", short: "Breakfast", image: "media/cat-breakfast.jpg" },
+      { id: "soups", name: "Soups, Salads & Sandwiches", blurb: "It's noon… time to eat", short: "Lunch", image: "media/cat-soups.jpg" },
+      { id: "appetizers", name: "Appetizers", blurb: "From unique treats to spicy eats", short: "Apps", image: "media/cat-appetizers.jpg" },
+      { id: "dinner", name: "Dinner Entrees & Sides", blurb: "The heart of the table", short: "Dinner", image: "media/cat-dinner.jpg" },
+      { id: "desserts", name: "Desserts", blurb: "Sweet sensations", short: "Sweets", image: "media/cat-desserts.jpg" },
+      { id: "cocktails", name: "Cocktails", blurb: "Double the pleasure", short: "Drinks", image: "media/cat-cocktails.jpg" }
+    ];
+
+    const RECIPES = [
+  {
+    "id": "banana-bread",
+    "category": "breakfast",
+    "title": "Banana Bread",
+    "from": "Rita Marino",
+    "prep": "15 minutes",
+    "cook": "1 hour",
+    "image": "media/banana-bread.jpg",
+    "fact": "Growing up we had one cookbook “Betty Crocker”. Banana Bread was one of my favorite recipes I made throughout my lifetime.",
+    "ingredients": [
+      "½ cup unsalted butter, melted and cool",
+      "1¼ cup granulated sugar",
+      "1 teaspoon vanilla extract",
+      "1 teaspoon salt",
+      "2 large eggs",
+      "½ cup buttermilk",
+      "1 teaspoon baking soda",
+      "2½ cups all-purpose flour",
+      "4 ripe bananas"
+    ],
+    "steps": [
+      "Preheat oven to 350°F. Set oven rack to low position so tops of pans will be in center of oven. Grease bottoms only of 2 loaf pans 8½″ × 4½″ × 2½″ or 1 loaf pan, 9×5×3 inches.",
+      "In a large bowl mix together butter and sugar until light and creamy. Add eggs and blend.",
+      "Mash bananas with a fork in a separate bowl and blend into egg mixture. Add buttermilk and vanilla and mix well.",
+      "Fold in the dry ingredients until everything is mixed together.",
+      "Pour into prepared pan and bake 50 minutes; 9-inch loaf 1 hour. Test with toothpick — it should come out clean.",
+      "Cool 10 minutes before removing from pan. Place on wire rack, top side up, and cool completely, about 2 hours before slicing.",
+      "Wrap tightly and store at room temperature up to 4 days or refrigerate up to 10 days."
+    ],
+    "notes": "Variations — add during mixing: Raisin Cinnamon Bread: 1½ cup raisins & 2 teaspoons cinnamon. Banana Nut Bread: 1 cup pecans or walnuts."
+  },
+  {
+    "id": "french-toast",
+    "category": "breakfast",
+    "title": "French Toast",
+    "from": "Rita Marino",
+    "prep": "10 minutes",
+    "cook": "15 minutes",
+    "serves": "4",
+    "image": "media/french-toast.jpg",
+    "fact": "Growing up we made French toast often and still make it today, mostly for my grandson Vincent. He loves his Nana’s French toast for breakfast.",
+    "ingredients": [
+      "4 egg yolks",
+      "½ cup milk",
+      "1 tablespoon granulated sugar",
+      "1 tablespoon vanilla",
+      "1 teaspoon cinnamon",
+      "4 slices white or wheat bread, cut in half",
+      "Powdered sugar (optional)",
+      "Canola or vegetable oil for frying"
+    ],
+    "steps": [
+      "Choose your bread and cut in half; set aside.",
+      "Heat oil in a 12-inch skillet over medium heat.",
+      "In a medium bowl, whisk together egg yolks, milk, sugar, vanilla extract and cinnamon. Pour into a shallow dish.",
+      "Place slices of bread in egg mixture and let sit 10 to 20 seconds; flip and repeat for the other side.",
+      "Place the French toast in the skillet and cook about 3 minutes on each side. Remove and place on paper towel to absorb excess oil.",
+      "Serve with your favorite maple syrup, and sprinkle with powdered sugar."
+    ]
+  },
+  {
+    "id": "biscuit-donuts",
+    "category": "breakfast",
+    "title": "Biscuit Donuts",
+    "from": "Rita Marino",
+    "prep": "10 minutes",
+    "cook": "20 minutes",
+    "image": "media/biscuit-donuts.jpg",
+    "fact": "Growing up in the late 50’s early 60’s my sisters & I would make these donuts. I occasionally made these for my children who also enjoyed them.",
+    "ingredients": [
+      "1 10 to 12-inch skillet",
+      "1 can Pillsbury biscuits (non-flaky)",
+      "1 cup canola oil",
+      "1 cup powdered sugar"
+    ],
+    "steps": [
+      "Heat oil in skillet on medium heat.",
+      "Separate biscuits, then with a small round cookie cutter, cut a hole in the center of each biscuit.",
+      "Place donuts into oil and fry on both sides until golden brown.",
+      "Drain on paper towel, let cool a bit, and coat both sides with powdered sugar."
+    ]
+  },
+  {
+    "id": "ten-can-soup",
+    "category": "soups",
+    "title": "10 Can Soup",
+    "from": "Denise Stasio",
+    "prep": "10 minutes",
+    "cook": "30 minutes",
+    "image": "media/ten-can-soup.jpg",
+    "fact": "A favorite go-to hearty soup for cold weather days, complements of my sister Denise. My family loves this soup.",
+    "ingredients": [
+      "1½ pounds ground chuck beef",
+      "3 cans minestrone soup",
+      "2 cans Rotel",
+      "2 cans Ranch Style Beans with jalapeño peppers",
+      "1 can corn",
+      "1 can cut green beans",
+      "1 can black-eyed peas"
+    ],
+    "steps": [
+      "In a skillet brown ground beef and drain grease.",
+      "Add all cans of vegetables and browned ground beef together in a 2½ to 3-quart pot and cook on medium for 30 minutes."
+    ]
+  },
+  {
+    "id": "chicken-vegetable-soup",
+    "category": "soups",
+    "title": "Chicken Vegetable Soup",
+    "from": "Lena Marino",
+    "prep": "20 minutes",
+    "cook": "40 minutes",
+    "image": "media/chicken-vegetable-soup.jpg",
+    "fact": "Enjoyed this soup at Emiel & Lena’s house in the late 1960’s. Lena made this soup at least once a month and usually added butter beans.",
+    "ingredients": [
+      "6 chicken parts with bone",
+      "1 bag frozen mixed vegetables",
+      "3 medium potatoes, quarter cut",
+      "1 tablespoon Texjoy steak seasoning",
+      "2 tablespoons salt & pepper",
+      "1 (24-ounce) can tomato sauce",
+      "4 to 6 quarts water"
+    ],
+    "steps": [
+      "Add water to a 10-quart pot and bring to a boil. Add chicken and cook for 10 minutes. Skim off fat from water.",
+      "Add vegetables, potatoes, tomato sauce and seasonings.",
+      "Cook on medium for 30 minutes.",
+      "Serve with your favorite noodles/pasta."
+    ]
+  },
+  {
+    "id": "spinach-bacon-soup",
+    "category": "soups",
+    "title": "Spinach & Bacon Soup",
+    "from": "Café Bon Appetit",
+    "prep": "20 minutes",
+    "cook": "20 minutes",
+    "image": "media/spinach-bacon-soup.jpg",
+    "fact": "I acquired a great little specialty cookbook, Fessin’ Up by Sue Fess and had to add my favorite soup. I make this soup for my mom when she comes to visit me in San Antonio.",
+    "ingredients": [
+      "1 small onion, chopped",
+      "10 strips bacon, diced",
+      "1 clove garlic, minced",
+      "1 stick butter (4 ounces)",
+      "1 tablespoon flour",
+      "4 cups chicken stock",
+      "1 (10-ounce) package frozen spinach, thawed & squeezed dry",
+      "1 cup heavy cream",
+      "½ cup white wine"
+    ],
+    "steps": [
+      "Sauté the onion, bacon, and garlic in a skillet until lightly browned. Remove with a slotted spoon and set aside.",
+      "Melt the butter in a saucepan. Add the flour and cook for 2 minutes, stirring constantly. Slowly add the stock and bring to a boil.",
+      "Add the onion and bacon mixture together with the spinach. Bring to a boil, stirring occasionally.",
+      "Pour in heavy cream and white wine. Heat thoroughly, and season to taste with salt and pepper."
+    ]
+  },
+  {
+    "id": "grill-cheese",
+    "category": "soups",
+    "title": "Grill Cheese Sandwich",
+    "from": "Rita Marino",
+    "prep": "5 minutes",
+    "cook": "5 minutes",
+    "image": "media/grill-cheese.jpg",
+    "fact": "This quick and easy sandwich has been a quick snack for my sons and their friends throughout the years.",
+    "ingredients": [
+      "1 slice Velveeta cheese",
+      "2 slices bread",
+      "2 tablespoons butter or margarine",
+      "Square skillet or panini pan"
+    ],
+    "steps": [
+      "Butter one side of two slices bread and place on pan.",
+      "Toast both sides of bread and place cheese between unbuttered side of toast, making a sandwich.",
+      "Grill both sides of sandwich until cheese is melted inside."
+    ],
+    "notes": "Add a slice of ham when cooking and place on cheese to make a hot ham and cheese sandwich."
+  },
+  {
+    "id": "tuna-salad",
+    "category": "soups",
+    "title": "Tuna Salad",
+    "from": "Rita Marino",
+    "prep": "10 minutes",
+    "image": "media/tuna-salad.jpg",
+    "ingredients": [
+      "1 (12-ounce) can chunk light tuna",
+      "2 celery stalks, chopped",
+      "2 dill pickles, chopped",
+      "2 hard-boiled eggs, chopped",
+      "2 tablespoons mayonnaise",
+      "1 tablespoon honey mustard",
+      "1 teaspoon chives, minced",
+      "Salt and black pepper to taste"
+    ],
+    "steps": [
+      "Add all ingredients into a bowl and mix.",
+      "Season with salt and pepper.",
+      "Serve on butter lettuce for wraps or your favorite bread for sandwiches."
+    ]
+  },
+  {
+    "id": "italian-wedding-soup",
+    "category": "soups",
+    "title": "Italian Wedding Soup",
+    "from": "Spaghetti Warehouse",
+    "prep": "35 minutes",
+    "cook": "30 minutes",
+    "image": "media/italian-wedding-soup.jpg",
+    "fact": "In the mid 90’s our family occasionally ate lunch on Sundays after mass at Spaghetti Warehouse. Years later I found their Italian Wedding Soup recipe in a magazine and make it on request — usually from Blake.",
+    "ingredients": [
+      "1 gallon water",
+      "1 ounce chicken base bouillon",
+      "1 cup celery, diced",
+      "1 cup carrot, shredded",
+      "1 cup yellow onion, diced",
+      "1 cup spinach, chopped, frozen",
+      "1 teaspoon sweet basil",
+      "1 teaspoon garlic, chopped",
+      "1 teaspoon black pepper",
+      "1 pound chicken breast meat, cooked and diced",
+      "1 pound tiny meatballs",
+      "1 cup vermicelli, cooked, broken in quarter length"
+    ],
+    "steps": [
+      "Bring water to a boil in a large stock pot.",
+      "Add chicken base. Stir to dissolve. Add celery, carrots, onion, spinach, and basil. Simmer 10 minutes.",
+      "Season with salt, pepper and basil. Cook chicken (I use chicken tenders) in air fryer or oven for 15 minutes.",
+      "Mix and cook mini meatballs (I use Lena Marino’s Meatball recipe) in air fryer or oven for 10 minutes.",
+      "Add cooked meatballs and chicken to the soup and cook on medium-low for 30 minutes.",
+      "Cook vermicelli and set aside to serve with soup."
+    ]
+  },
+  {
+    "id": "chicken-tortilla-soup",
+    "category": "soups",
+    "title": "Chicken Tortilla Soup",
+    "from": "Ann Piazza",
+    "prep": "20 minutes",
+    "cook": "8 hours",
+    "serves": "6–8",
+    "image": "media/chicken-tortilla-soup.jpg",
+    "ingredients": [
+      "4 boneless chicken breasts",
+      "2 (15-ounce) cans black beans, undrained",
+      "2 (15-ounce) cans Mexican stewed tomatoes / Rotel",
+      "1 cup salsa",
+      "1 (4-ounce) can chopped green chilies",
+      "1 (14-ounce) can tomato sauce",
+      "1 chopped onion",
+      "½ cup chopped cilantro",
+      "1 cup corn",
+      "1 cup chicken broth",
+      "3 cups grated cheese",
+      "Tortilla chips"
+    ],
+    "steps": [
+      "Combine all ingredients in a slow cooker except chips and cheese.",
+      "Cook on high for 8 hours. Refrigerate overnight.",
+      "To serve, put a handful of chips in each bowl, ladle soup on top and sprinkle with cheese."
+    ],
+    "notes": "If cooking on stovetop, cook on low heat, stirring frequently for 3 hours."
+  },
+  {
+    "id": "shredded-lettuce-salad",
+    "category": "soups",
+    "title": "Shredded Lettuce Salad",
+    "from": "Helen Del Papa",
+    "prep": "20 minutes",
+    "image": "media/shredded-lettuce-salad.jpg",
+    "ingredients": [
+      "2 romaine hearts",
+      "2 tomatoes",
+      "2 cucumbers",
+      "2 avocados",
+      "½ purple onion",
+      "1 jalapeño pepper",
+      "½ bunch cilantro"
+    ],
+    "steps": [
+      "Slice romaine heart lettuce very thin; slice and cut tomatoes into small pieces. Cut avocado into small pieces.",
+      "Slice purple onion very thin and cut into small pieces. Seed jalapeño and cut into very small pieces.",
+      "Finely chop cilantro.",
+      "Toss together and dress with fresh lemon or lime juice, salt, pepper, and a small amount of olive oil."
+    ]
+  },
+  {
+    "id": "chicken-gumbo",
+    "category": "soups",
+    "title": "Chicken Gumbo",
+    "from": "Grace Perkins",
+    "prep": "20 minutes",
+    "cook": "1 hour+",
+    "image": "media/chicken-gumbo.jpg",
+    "fact": "This recipe was always a popular dish at Grace’s restaurant in Beaumont.",
+    "ingredients": [
+      "2½ gallons water",
+      "5–6 pounds chicken tenders",
+      "1 tablespoon margarine",
+      "1 pint jar dark roux",
+      "1 tablespoon garlic powder",
+      "3 tablespoons Tony Chachere’s seasonings",
+      "1 pound beef sausage",
+      "1 stalk celery",
+      "2 tablespoons salt",
+      "1 bunch green onion",
+      "1 tablespoon pepper",
+      "1 green bell pepper"
+    ],
+    "steps": [
+      "Brown chicken in margarine; season with salt, pepper & Tony’s seasoning.",
+      "In a blender, blend celery, green onion & bell pepper and add to chicken while browning in skillet.",
+      "In a 10-quart pot add water and bring to a boil. Spoon in roux and stir until dissolved, stirring constantly so it does not stick.",
+      "Add chicken cooked in spices and cook on medium heat.",
+      "Slice and brown sausage in microwave. Drain grease and add to gumbo.",
+      "Cook on medium heat stirring occasionally for 1 hour. Serve with rice."
+    ]
+  },
+  {
+    "id": "italian-pasta-salad",
+    "category": "soups",
+    "title": "Italian Pasta Salad",
+    "from": "Debbie Tortorice",
+    "prep": "20 minutes",
+    "cook": "20 minutes",
+    "image": "media/italian-pasta-salad.jpg",
+    "fact": "In the late 70’s at one of the many Marino family gatherings, I sampled this salad made by a classmate. I have been making it ever since. Great side for work potluck, special occasions and weekend family get-togethers.",
+    "ingredients": [
+      "1 (12-ounce) package vermicelli",
+      "½ cup canola oil",
+      "4 tablespoons Texjoy steak seasoning",
+      "3 tablespoons lemon juice",
+      "Dash of Tabasco",
+      "1 jar chopped pimentos",
+      "1 small can sliced black olives",
+      "3–4 green onions, sliced"
+    ],
+    "steps": [
+      "Boil vermicelli for 4 minutes and drain. Mix oil, steak seasoning, lemon juice and Tabasco.",
+      "Pour over hot vermicelli & chill for 3 hours.",
+      "Mix pimentos, black olives and sliced green onions and add to vermicelli once cooled."
+    ]
+  },
+  {
+    "id": "marinated-carrot-salad",
+    "category": "soups",
+    "title": "Marinated Carrot Salad",
+    "from": "Loretta Gary",
+    "prep": "20 minutes",
+    "cook": "20 minutes",
+    "image": "media/marinated-carrot-salad.jpg",
+    "fact": "This recipe is another traditional side dish served at the Gary Thanksgiving and Christmas gatherings.",
+    "ingredients": [
+      "2½ quarts water",
+      "2 packages carrots, sliced (raw)",
+      "1 onion",
+      "¾ cup vinegar",
+      "1 teaspoon salt, pepper & Tabasco",
+      "1 teaspoon mustard",
+      "1 tablespoon Worcestershire sauce",
+      "1 cup sugar",
+      "1 cup tomato soup",
+      "1 cup canola oil"
+    ],
+    "steps": [
+      "Pour water into a 3-quart pot and bring to a boil.",
+      "Add sliced carrots and cook on low for 15 minutes.",
+      "Drain carrots and pour into a large bowl. Let cool completely and add remaining ingredients.",
+      "Refrigerate for 3 hours."
+    ]
+  },
+  {
+    "id": "crab-mousse",
+    "category": "appetizers",
+    "title": "Crab Mousse",
+    "from": "Loretta Gary",
+    "prep": "10 minutes",
+    "cook": "15 minutes",
+    "image": "media/crab-mousse.jpg",
+    "fact": "This recipe is a traditional appetizer served at the Gary Thanksgiving and Christmas gatherings.",
+    "ingredients": [
+      "2 (8-ounce) packages cream cheese",
+      "1 can cream of mushroom soup",
+      "2 packages Knox (clear) gelatin",
+      "¼ cup cold water",
+      "½ cup celery, fine chopped",
+      "½ cup green onion, fine chopped",
+      "1 cup mayonnaise",
+      "2 cups crab meat",
+      "¼ teaspoon curry powder",
+      "Double boiler pot",
+      "Jell-O mold pan"
+    ],
+    "steps": [
+      "Bring water to a boil in a double boiler. Add soup and cheese and stir until smooth.",
+      "Reduce heat to low and add remaining ingredients to cheese mixture and mix.",
+      "Pour into Jell-O mold; chill until firm."
+    ]
+  },
+  {
+    "id": "carls-salsa",
+    "category": "appetizers",
+    "title": "Carl’s Salsa",
+    "from": "Carl Michael Marino",
+    "prep": "20 minutes",
+    "cook": "30 minutes",
+    "image": "media/carls-salsa.jpg",
+    "fact": "February 2021, we had a taste test of 5 salsas from various local Mexican restaurants and homemade. Carl’s salsa placed 2nd with Henry’s Puffy Taco’s taking first place. Los Barrios salsa was the kids’ pick.",
+    "ingredients": [
+      "2½ quarts water",
+      "5 large tomatoes",
+      "3 jalapeños",
+      "Serrano peppers (to taste)",
+      "1 white onion",
+      "1 bunch cilantro",
+      "1½ teaspoons salt"
+    ],
+    "steps": [
+      "Bring water to a boil in a 5-quart pot.",
+      "Rinse tomatoes, peppers & cilantro. Cut off stems of peppers and tomatoes; set aside.",
+      "Cut stems off cilantro and put leafy part in blender. Cut onion into quarters and add ¾ in blender.",
+      "Once water comes to a boil add tomatoes and peppers and boil for 30 minutes.",
+      "Drain water from tomatoes and peppers and add to blender. Add salt and pepper and blend to desired consistency.",
+      "Serve with your favorite tortilla chips."
+    ]
+  },
+  {
+    "id": "chicken-fricassee",
+    "category": "dinner",
+    "title": "Chicken Fricassee",
+    "from": "Lena Marino",
+    "prep": "10 minutes",
+    "cook": "1½ hours",
+    "serves": "6",
+    "image": "media/chicken-fricassee.jpg",
+    "fact": "Enjoyed this dish at Emiel & Lena’s house in the late 1960’s. Usually served with black-eyed peas.",
+    "ingredients": [
+      "6 pieces chicken (raw)",
+      "2 cups Uncle Ben’s rice",
+      "1 (10.5-ounce) can French onion condensed soup",
+      "3 cups water",
+      "¼ bell pepper, sliced (optional)",
+      "1 tablespoon butter or margarine",
+      "1–2 tablespoons Texjoy steak seasoning"
+    ],
+    "steps": [
+      "Preheat oven to 350°F. In a 13×9 or 10×10 baking dish coat bottom with margarine.",
+      "Pour rice and spread evenly. Layer chicken pieces on top of rice and pour soup over evenly.",
+      "Pour water over chicken and rice and place sliced bell pepper evenly. Add Texjoy seasoning and cook for 1 hour and 30 minutes."
+    ]
+  },
+  {
+    "id": "chili",
+    "category": "dinner",
+    "title": "Chili",
+    "from": "Rita Marino",
+    "prep": "15 minutes",
+    "cook": "45 minutes",
+    "serves": "6–8",
+    "image": "media/chili.jpg",
+    "ingredients": [
+      "2 pounds ground chuck",
+      "1 pound beef sausage, sliced",
+      "1 can Ranch Style Beans with jalapeño peppers",
+      "1 (32-ounce) can tomato sauce",
+      "1 cup water",
+      "1 package McCormick’s chili seasoning mix"
+    ],
+    "steps": [
+      "Brown ground chuck and beef sausage in a 5-quart pot. Drain excess grease.",
+      "Add Ranch Style Beans, McCormick’s seasoning mix, tomato sauce, water and stir.",
+      "Cover and cook on medium-low for 45 minutes stirring occasionally.",
+      "Serve with rice."
+    ]
+  },
+  {
+    "id": "cheese-lasagna",
+    "category": "dinner",
+    "title": "Cheese Lasagna",
+    "from": "Rita Marino",
+    "prep": "20 minutes",
+    "cook": "1 hour 15 minutes",
+    "image": "media/cheese-lasagna.jpg",
+    "ingredients": [
+      "1 (48-ounce) jar of your favorite spaghetti sauce",
+      "1 (30-ounce) ricotta cheese",
+      "2 eggs",
+      "½ cup grated Parmesan cheese",
+      "2 teaspoons parsley, dried or finely chopped",
+      "2 cups grated mozzarella cheese",
+      "1 (12-ounce) package lasagna noodles"
+    ],
+    "steps": [
+      "Preheat oven to 350°F. Lightly grease a 13×9-inch baking pan.",
+      "In a large bowl, combine ricotta cheese, eggs, Parmesan cheese, parsley and one cup of mozzarella cheese. Mix until well combined.",
+      "Place 1½ cups of spaghetti sauce in the bottom of the prepared baking pan. Gently place four lasagna noodles onto sauce.",
+      "Add about ⅓ of the cheese mixture to the top of the noodles, and gently spread across noodles. Top cheese with 1 cup of sauce, then noodles. Repeat one more time, finishing with a final layer of sauce.",
+      "Cover with aluminum foil and bake for 45 minutes. Remove foil and bake for an additional 10 minutes. Remove from oven and let stand for 10 minutes prior to serving."
+    ],
+    "notes": "Ground beef sauce may be substituted for ricotta cheese for a delicious meat lasagna."
+  },
+  {
+    "id": "spaghetti-meatballs",
+    "category": "dinner",
+    "title": "Spaghetti & Meatballs",
+    "from": "Rita Marino",
+    "prep": "Sauce 40 min · Meatballs 15 min",
+    "cook": "Sauce 5–10 hrs · Meatballs 2–5 hrs",
+    "image": "media/spaghetti-meatballs.jpg",
+    "fact": "I was first introduced to this wonderful dish in the late 70’s at the Marino’s. I had never tasted the flavor of a tomato spaghetti sauce like this before and still do not feel I have captured her sauce, but it is close. Lena served this dish most Sundays as her mother (Carmela) did — an Italian family tradition.",
+    "ingredients": [
+      "Sauce: 2 tablespoons olive oil",
+      "6 (12-ounce) cans tomato paste",
+      "1 cup sugar",
+      "2 tablespoons minced garlic",
+      "½ large onion, chopped",
+      "3 tablespoons salt",
+      "3 quarts water",
+      "Meatballs: 5 pounds ground chuck",
+      "2 slices bread, grated in blender",
+      "1 cup Progresso Italian breadcrumbs",
+      "½ cup Parmesan grated cheese",
+      "5 eggs",
+      "½ large onion, quartered",
+      "2 tablespoons minced garlic",
+      "2 tablespoons salt & pepper"
+    ],
+    "steps": [
+      "Sauce: In a 2½-quart pot sauté onion & garlic in oil for 15 minutes. Add tomato paste and simmer uncovered for 20 minutes stirring occasionally.",
+      "While paste is simmering, in a 10-quart pot add water, sugar, salt and heat on high.",
+      "Pour cooked tomato paste into sugar water and reduce heat to medium-low. Cook for 5 to 10 hours, stirring occasionally.",
+      "Meatballs: Place ground chuck in a large mixing bowl. Add breadcrumbs & cheese; set aside.",
+      "In blender, add onion, garlic, salt, pepper & eggs, and blend until chopped and mixed. Pour over ground chuck.",
+      "Mix by hand and shape into meatballs. Brown in skillet on medium-low heat, drain and add to sauce in large pot. Cover and cook on low heat for 2 to 5 hours."
+    ],
+    "notes": "The longer the sauce cooks, the better the flavor. I usually start cooking the sauce 2 days prior to serving, leaving on low overnight. I add the meatballs to the sauce the following day and let them cook all day and overnight, serving the next day. Serve with spaghetti & garlic bread."
+  },
+  {
+    "id": "squash-casserole",
+    "category": "dinner",
+    "title": "Squash Casserole",
+    "from": "Loretta Gary",
+    "prep": "20 minutes",
+    "cook": "30 minutes",
+    "image": "media/squash-casserole.jpg",
+    "fact": "This recipe is another traditional side dish served at the Gary Thanksgiving and Christmas gatherings.",
+    "ingredients": [
+      "10 squash, sliced",
+      "¼ teaspoon baking powder",
+      "1 onion, chopped",
+      "1 celery stalk",
+      "2 eggs",
+      "¼ cup milk",
+      "2 tablespoons margarine",
+      "2 slices bread, grated in blender",
+      "1 cup Progresso Italian breadcrumbs",
+      "½ cup breadcrumbs"
+    ],
+    "steps": [
+      "Preheat oven to 350°F.",
+      "Cook squash on medium heat in a 2½-quart pot for 15 minutes. Pour into a 9×13-inch baking dish. Sauté onion & celery in margarine and pour over cooked squash.",
+      "Beat eggs and milk, add baking powder, mix and pour over squash. Top with breadcrumbs and margarine and bake for 20 to 30 minutes."
+    ]
+  },
+  {
+    "id": "cornbread-dressing",
+    "category": "dinner",
+    "title": "Cornbread Dressing",
+    "from": "Loretta Gary",
+    "prep": "20 minutes",
+    "cook": "30 minutes",
+    "image": "media/cornbread-dressing.jpg",
+    "fact": "This recipe is another traditional side dish served at the Gary Thanksgiving and Christmas gatherings.",
+    "ingredients": [
+      "3 packages corn kit (Morrison or Gladiola)",
+      "3 cans Swanson chicken broth",
+      "1 bunch green onion",
+      "1 white onion, chopped",
+      "½ bell pepper, chopped",
+      "2 stalks celery, chopped",
+      "1 pound spicy sausage (Owens or Jimmy Dean)",
+      "1 cup plain Progresso breadcrumbs",
+      "1 stick butter, melted"
+    ],
+    "steps": [
+      "Preheat oven to 350°F.",
+      "Cook cornbread according to directions. Cool and crumble; set aside.",
+      "Brown sausage, drain and set aside.",
+      "Sauté onion, bell pepper & celery in oil for 10 minutes or until vegetables are tender.",
+      "Wet cornbread with melted butter and chicken broth. Add remaining ingredients and mix.",
+      "Put in buttered casserole dish, cover, and cook for 30 minutes."
+    ]
+  },
+  {
+    "id": "stones-baked-beans",
+    "category": "dinner",
+    "title": "Stones Baked Beans",
+    "from": "Mary Stone",
+    "prep": "5 minutes",
+    "cook": "20 minutes",
+    "image": "media/stones-baked-beans.jpg",
+    "fact": "In the mid-70’s a co-worker of Carl’s brought this dish to a get-together and I decided I had to keep the recipe as a side dish. Since that time, I have been making it for my family.",
+    "ingredients": [
+      "2 (15-ounce) cans pork and beans",
+      "2 tablespoons barbecue sauce",
+      "2 tablespoons catsup",
+      "1 tablespoon honey mustard",
+      "1 tablespoon Worcestershire sauce",
+      "1 teaspoon Texjoy steak seasoning",
+      "Italian, garlic, onion, red and black pepper",
+      "Dash of Tabasco"
+    ],
+    "steps": [
+      "In a 2-quart pot add all ingredients, cover and cook on medium-low for 20 minutes, stirring occasionally."
+    ]
+  },
+  {
+    "id": "taco-rice",
+    "category": "dinner",
+    "title": "Taco & Rice",
+    "from": "Lena Marino",
+    "prep": "10 minutes",
+    "cook": "30 minutes",
+    "image": "media/taco-rice.jpg",
+    "fact": "This recipe was a weekly dish at Mee-maw and Pawpaw Marino’s house. Still served today at my house.",
+    "ingredients": [
+      "1½ pounds ground chuck",
+      "1 package McCormick’s taco seasoning mix",
+      "1 (15-ounce) can Ranch Style Beans",
+      "2 cups Uncle Ben’s rice",
+      "4 cups water"
+    ],
+    "steps": [
+      "Brown ground chuck in skillet; drain excess grease.",
+      "Add taco seasoning mix and water according to package. Add Ranch Style Beans, cover and cook on medium-low for 20 minutes.",
+      "Put water in 2½-quart pot and bring to a boil. Add rice and let water boil down to just above the rice. Cover and reduce heat to low and cook for 20 minutes."
+    ]
+  },
+  {
+    "id": "crawfish-cornbread",
+    "category": "dinner",
+    "title": "Crawfish Cornbread",
+    "from": "Grace Perkins",
+    "prep": "20 minutes",
+    "cook": "30 minutes",
+    "serves": "6",
+    "image": "media/crawfish-cornbread.jpg",
+    "fact": "This recipe was always a popular dish at Grace’s restaurant in Beaumont.",
+    "ingredients": [
+      "3 eggs",
+      "1 can cream-style corn",
+      "½ can Rotel, drained",
+      "1 large onion, chopped",
+      "½ medium bell pepper, chopped",
+      "2 cups shredded cheese",
+      "¼ cup jalapeño pepper, chopped",
+      "1 pound crawfish tails",
+      "⅔ cup vegetable oil",
+      "1 cup corn meal",
+      "½ tablespoon baking powder",
+      "½ teaspoon baking soda",
+      "½ teaspoon Tony Chachere’s seasoning"
+    ],
+    "steps": [
+      "Preheat oven to 375°F.",
+      "In a medium bowl mix dry ingredients; set aside. In a large bowl mix remaining ingredients well.",
+      "Add dry ingredients and mix well.",
+      "Pour in a greased 9×13-inch baking dish and bake for 30 minutes or until golden brown."
+    ]
+  },
+  {
+    "id": "pizza",
+    "category": "dinner",
+    "title": "Pizza",
+    "from": "Rita Marino",
+    "prep": "1 hour 20 minutes",
+    "cook": "5–10 minutes",
+    "image": "media/pizza.jpg",
+    "ingredients": [
+      "1½ cups warm water",
+      "2 teaspoons sugar",
+      "2¼ teaspoons active dry yeast",
+      "3½ cups all-purpose flour",
+      "2 tablespoons olive oil",
+      "2 teaspoons salt",
+      "1 jar pizza sauce",
+      "Mozzarella cheese",
+      "1 pound ground meat",
+      "Package of pepperoni"
+    ],
+    "steps": [
+      "Preheat oven to 425°F. Combine warm water, sugar, and yeast in a large bowl. Let proof for 5 minutes until foamy.",
+      "Add flour, olive oil, salt and stir well with a wooden spoon or mix in a stand mixer with a dough hook until combined.",
+      "Knead for 5 minutes using stand mixer with a dough hook attachment or 6 minutes by hand until smooth and elastic.",
+      "Drizzle a clean bowl with a little olive oil, then place the ball of dough in the bowl and turn it to coat in the olive oil. Cover with plastic wrap or a clean cloth and let rise for 30 minutes or until double in size.",
+      "Roll, pat or stretch the dough out until it is ¼ inch thick. Place on round or square baking sheet. Top with sauce, cheese, and meat topping.",
+      "Bake 5 to 10 minutes until cheese is melted and crust is golden brown and crispy around the edges. Cool slightly before cutting and serving."
+    ]
+  },
+  {
+    "id": "brown-gravy-rice",
+    "category": "dinner",
+    "title": "Brown Gravy & Rice",
+    "from": "Lena Marino",
+    "prep": "15 minutes",
+    "cook": "6 hours",
+    "image": "media/brown-gravy-rice.jpg",
+    "fact": "This recipe was created from a dish Lena Marino served weekly made with the brown gravy mix. Lena cooked a roast with this mix in the oven. I revised it using a crockpot in place of the oven.",
+    "ingredients": [
+      "2 (4.5-ounce) packages brown gravy mix (Southeastern Mills Classic Brown Gravy Mix)",
+      "½ bell pepper, sliced",
+      "1 split chicken",
+      "2 tablespoons Texjoy steak seasoning",
+      "1 tablespoon crushed red pepper",
+      "5–6 quart crockpot"
+    ],
+    "steps": [
+      "Place chicken in the crockpot and turn on to Low.",
+      "Season with Texjoy steak seasoning and red pepper flakes.",
+      "In a 2½–3-quart pot make brown gravy according to directions on package and pour over chicken.",
+      "Add bell pepper, cover, and cook on low for 6 hours stirring occasionally.",
+      "Serve over rice."
+    ],
+    "notes": "Roast may be substituted for chicken. If using 1.76-ounce brown gravy mix packets, use 3 packages."
+  },
+  {
+    "id": "italian-green-beans",
+    "category": "dinner",
+    "title": "Italian Green Beans",
+    "from": "Rita Marino",
+    "prep": "5 minutes",
+    "cook": "20 minutes",
+    "image": "media/italian-green-beans.jpg",
+    "ingredients": [
+      "1 (32-ounce) can Italian cut green beans",
+      "2 small russet potatoes, peeled",
+      "2 tablespoons olive oil",
+      "2 tablespoons Texjoy steak seasoning",
+      "½ tablespoon red pepper flakes",
+      "2½ quart sauce pot"
+    ],
+    "steps": [
+      "Cut sliced potatoes in half and brown in olive oil in sauce pot.",
+      "Pour can of green beans over browned potatoes and season with Texjoy and red pepper flakes.",
+      "Cover and cook for 20 minutes."
+    ]
+  },
+  {
+    "id": "street-tacos",
+    "category": "dinner",
+    "title": "Street Tacos",
+    "from": "Jessica Marino",
+    "prep": "15 minutes",
+    "cook": "20 minutes",
+    "image": "media/street-tacos.jpg",
+    "ingredients": [
+      "2 pounds beef skirt steak",
+      "1 (20–50) package Guerrero mini corn tortillas",
+      "2 tablespoons olive oil",
+      "2 tablespoons Fiesta Beef Fajita Seasoning",
+      "2 mini red peppers, chopped",
+      "2 mini orange peppers, chopped",
+      "1 cup Habanero Jack cheese, shredded",
+      "1 cup sharp cheddar cheese, shredded",
+      "1 medium avocado",
+      "½ cup green onion, chopped",
+      "1 lime",
+      "El Yucateco salsa",
+      "10 to 12 inch skillet"
+    ],
+    "steps": [
+      "Place beef skirt steak on the grill, season with Fiesta Beef Fajita Seasoning and grill for 8–12 minutes on each side depending on thickness of skirt steak.",
+      "Remove steaks and cut into small cubes. Place in skillet and add chopped red and orange mini peppers. Cook on medium/low for about 5 to 10 minutes.",
+      "Place corn tortillas on grill and cook for 2–4 minutes on each side.",
+      "Assemble taco and garnish with your choice of avocado, green onion, lime juice, El Yucateco salsa and shredded cheese."
+    ],
+    "notes": "Ground beef may be substituted for skirt steak. Photo by Jessica Marino."
+  },
+  {
+    "id": "chicken-pasta-toss",
+    "category": "dinner",
+    "title": "Chicken Pasta Toss",
+    "from": "Denise Stasio",
+    "prep": "15 minutes",
+    "cook": "20 minutes",
+    "image": "media/chicken-pasta-toss.jpg",
+    "fact": "Denise won this recipe and wooden bread basket at a St. Agnes Academy faculty luncheon in Houston. The Stasio’s have enjoyed this dinner for many years and have served it often to friends & family.",
+    "ingredients": [
+      "1 pound box bowtie pasta",
+      "2 cooked chicken breasts, cut into strips",
+      "1 cup broccoli florets",
+      "1 cup sundried tomatoes, julienne cut",
+      "1 cup Parmesan cheese"
+    ],
+    "steps": [
+      "Cook pasta until almost done — pasta should still be chewy. Add broccoli into pot with pasta and cook for 3 minutes.",
+      "Strain pasta and broccoli. Pour pasta into a large serving bowl, add cooked chicken, sundried tomatoes, Parmesan cheese and toss.",
+      "Serve with bread sticks and salad of your choice."
+    ]
+  },
+  {
+    "id": "biscotti",
+    "category": "desserts",
+    "title": "Biscotti",
+    "from": "Lena Del Papa",
+    "prep": "20 minutes",
+    "cook": "45 minutes",
+    "image": "media/biscotti.jpg",
+    "fact": "These cookies are a Christmas tradition. I usually made these for my Bunco group and work holiday parties. Always a big hit.",
+    "ingredients": [
+      "6 cups flour",
+      "2¼ cups sugar",
+      "3 teaspoons baking powder",
+      "¾ teaspoon salt",
+      "6 teaspoons anise seeds",
+      "6 eggs",
+      "½ cup butter",
+      "½ cup Crisco",
+      "1½ cups chopped almonds or pecans",
+      "1½ teaspoons vanilla extract",
+      "1½ teaspoons almond extract",
+      "6 tablespoons Anisette"
+    ],
+    "steps": [
+      "Preheat oven to 350°F.",
+      "In a large bowl mix flour, baking powder, salt, anise seeds and nuts together. Cut in Crisco and butter. Set aside.",
+      "In a medium bowl mix sugar, eggs, vanilla, almond extract, and Anisette.",
+      "Pour egg mixture over flour mixture and mix well. Roll and form into logs about 8–10 inches long and 2 inches wide.",
+      "Bake 35 minutes or until brown at 350°F. Remove from oven, slice, and brush with Anisette.",
+      "Place sliced biscotti evenly on cookie sheet and bake at 400° until brown. Turn over, brush with Anisette and cook other side until brown. Let cool completely before storing."
+    ]
+  },
+  {
+    "id": "martha-washingtons",
+    "category": "desserts",
+    "title": "Martha Washington’s",
+    "from": "Sadie Hicks",
+    "prep": "20 minutes",
+    "cook": "45 minutes",
+    "image": "media/martha-washingtons.jpg",
+    "fact": "In the mid 70’s at one of the many Marino gatherings with friends & family, I tasted this sweet treat. At that time called “Chocolate Dips” and later discovered the real name “Old fashion Martha Washington candy”. Since that time, I’ve made them for holidays, work potlucks and Bunco games.",
+    "ingredients": [
+      "3 cups powdered sugar",
+      "1 (14-ounce) bag Angel Flake coconut",
+      "1 (14-ounce) can sweetened condensed milk",
+      "1 cup unsalted butter",
+      "1½ cups pecans, chopped",
+      "1½ teaspoons vanilla extract",
+      "1 box semi-sweet Baker’s chocolate",
+      "¾ block household paraffin wax (like Gulf wax)"
+    ],
+    "steps": [
+      "Mix together sugar, coconut, milk, butter, pecans & vanilla. Cover and refrigerate overnight.",
+      "Roll into marble-size balls and place on wax paper. Chill in refrigerator while melting chocolate dipping sauce.",
+      "Melt in double boiler chocolate & wax. Dip ball in chocolate with toothpick & place on wax paper."
+    ]
+  },
+  {
+    "id": "cinnamon-streusel-cake",
+    "category": "desserts",
+    "title": "Cinnamon Streusel Cake",
+    "from": "Rita Marino",
+    "prep": "10 minutes",
+    "cook": "55 minutes",
+    "image": "media/cinnamon-streusel-cake.jpg",
+    "ingredients": [
+      "Cake: 1 box yellow cake mix (Betty Crocker butter cake mix)",
+      "1 package vanilla instant pudding (3.9-ounce box)",
+      "¾ cup milk",
+      "¾ cup water",
+      "4 large eggs (room temperature)",
+      "1 teaspoon vanilla extract",
+      "Streusel: ¼ cup granulated sugar",
+      "2 teaspoons cinnamon",
+      "Glaze: 1 cup powdered sugar",
+      "2 tablespoons milk",
+      "½ teaspoon butter extract",
+      "½ teaspoon vanilla extract"
+    ],
+    "steps": [
+      "Preheat oven to 350°F. Grease and flour a 10 or 12-cup Bundt pan and set aside.",
+      "In a small bowl, stir together the streusel ingredients. Set aside.",
+      "In a large mixing bowl, stir together the cake and pudding mixes. Add milk and water and stir to combine. Beat in eggs one at a time, combining well after each, then add the vanilla extract. Beat for 6 minutes at high speed.",
+      "Pour half the batter into the prepared Bundt pan, sprinkle with all the cinnamon-sugar mixture, then pour the remaining batter over the top. Bake for 55 minutes.",
+      "Cool cake for 8 minutes, then turn cake out of pan and let cool completely.",
+      "For glaze: Beat together all ingredients until smooth and drizzle over cooled cake."
+    ]
+  },
+  {
+    "id": "tipsy-pudding",
+    "category": "desserts",
+    "title": "Tipsy Pudding",
+    "from": "Loretta Gary",
+    "prep": "15 minutes",
+    "cook": "10 minutes",
+    "image": "media/tipsy-pudding.jpg",
+    "fact": "This dessert was made by Julia and served at Momo’s (Grandmother Bordages) house growing up. This family recipe is still made by my mom every Thanksgiving & Christmas during the family gatherings.",
+    "ingredients": [
+      "1 quart whole milk",
+      "6 eggs, separated",
+      "1 cup sugar",
+      "2½ envelopes Knox gelatin, dissolve in cherry juice",
+      "1 (10-ounce) jar cherries",
+      "¾ cup whiskey",
+      "½ cup pecans, cut up",
+      "12 almond macaroons, broken up (Italian bakery cookies from HEB)",
+      "8-ounce carton whipping cream"
+    ],
+    "steps": [
+      "Heat milk to warm. Beat egg yolks, add to sugar; when milk is warm add eggs and sugar stirring constantly.",
+      "Put back on stove and bring almost to a boil (about 10 minutes). Beat egg whites; add egg whites and gelatin mixture to other.",
+      "Stir until very cool. Stir in whiskey. Pour over cookies, cherries, nuts. Put in refrigerator. Top with whipped cream when serving."
+    ]
+  },
+  {
+    "id": "toll-house-cookies",
+    "category": "desserts",
+    "title": "Original Toll House Cookies",
+    "from": "Toll House",
+    "prep": "10 minutes",
+    "cook": "9–11 minutes",
+    "image": "media/toll-house-cookies.jpg",
+    "fact": "I started making these cookies in the early 60’s with my sisters. A family favorite. Simple and timeless.",
+    "ingredients": [
+      "2¼ cups all-purpose flour",
+      "1 teaspoon baking soda",
+      "1 teaspoon salt",
+      "1 cup butter, softened",
+      "¾ cup sugar",
+      "¾ cup firmly packed brown sugar",
+      "1 teaspoon vanilla extract",
+      "2 eggs",
+      "1 (12-ounce) package (2 cups) Nestlé Toll House semi-sweet chocolate morsels",
+      "1 cup chopped nuts"
+    ],
+    "steps": [
+      "Preheat oven to 375°F. In a small bowl, combine flour, baking soda and salt. Set aside.",
+      "In a large bowl, combine butter, sugar, brown sugar, and vanilla extract; beat until creamy. Beat in eggs. Gradually add flour mixture.",
+      "Stir in Nestlé Toll House semi-sweet chocolate morsels and nuts. Drop by level tablespoons onto ungreased cookie sheets. Bake for 9–11 minutes.",
+      "Pan cookie variation: Spread dough into greased 15½×10½×1-inch baking pan. Bake at 375°F for 20–25 minutes. Cool completely. Cut into thirty-five 2-inch squares."
+    ]
+  },
+  {
+    "id": "rosette-cookies",
+    "category": "desserts",
+    "title": "Rosette Cookies",
+    "from": "Mrs. Stasio",
+    "prep": "10 minutes",
+    "cook": "varies",
+    "image": "media/rosette-cookies.jpg",
+    "ingredients": [
+      "2 eggs",
+      "2½ cups all-purpose flour",
+      "¼ teaspoon salt",
+      "1 teaspoon vanilla extract (optional)",
+      "1½ tablespoons granulated sugar",
+      "1 cup milk",
+      "Canola oil for frying",
+      "Powdered sugar"
+    ],
+    "steps": [
+      "Combine eggs, sugar & salt in a medium size mixing bowl and beat well.",
+      "Add flour, milk, vanilla and beat until smooth.",
+      "Heat rosette iron in 2 to 3 inches hot oil for a minute or so before placing for the first time into batter.",
+      "Dip hot rosette iron into batter ¾ the way up the iron for about 5 seconds. Carefully remove from batter and immediately fry rosette in hot oil until golden brown — about 30 seconds. Lift rosette out and allow excess oil to drain off.",
+      "Place rosette onto paper towel on a wire rack. Reheat iron, drain & repeat.",
+      "Sift powdered sugar over cooled rosettes."
+    ]
+  },
+  {
+    "id": "pecan-pie",
+    "category": "desserts",
+    "title": "Pecan Pie",
+    "from": "Rita Marino",
+    "prep": "12 minutes",
+    "cook": "35 minutes",
+    "image": "media/pecan-pie.jpg",
+    "fact": "A holiday favorite that my sisters and I made often growing up. My sister Denise would bake this pie for Christmas-time gifts to give to her friends.",
+    "ingredients": [
+      "1 stick butter, melted",
+      "1 cup light Karo",
+      "1 cup pecans, whole halves",
+      "3 eggs",
+      "1 cup sugar",
+      "1 teaspoon vanilla extract",
+      "1 unbaked pie shell",
+      "Pinch of salt"
+    ],
+    "steps": [
+      "Preheat oven to 350°F.",
+      "Mix sugar and eggs together. Add Karo, salt, vanilla extract and butter. Stir in pecans and pour into pie shell. Bake for 30 to 35 minutes.",
+      "Serve warm or cold."
+    ]
+  },
+  {
+    "id": "banana-pudding",
+    "category": "desserts",
+    "title": "Banana Pudding",
+    "from": "Lena Marino",
+    "prep": "15 minutes",
+    "cook": "20 minutes",
+    "image": "media/banana-pudding.jpg",
+    "fact": "Lena’s banana pudding was always a treat for her family. The boys loved to eat a bowl hot as she finished mixing it in the serving bowl.",
+    "ingredients": [
+      "1 can Carnation evaporated milk",
+      "1 can water",
+      "½ cup sugar",
+      "2 eggs, beaten",
+      "¼ stick butter",
+      "3 tablespoons flour",
+      "1 teaspoon vanilla extract",
+      "2 bananas",
+      "Vanilla wafers (Nabisco)",
+      "2½-quart pot"
+    ],
+    "steps": [
+      "Add milk and water in a pot and warm on medium. Add butter and stir until blended.",
+      "In a separate bowl mix sugar and flour together and gradually add to milk and stir until blended.",
+      "Add beaten eggs to milk and flour mixture in pot and bring to a boil. Add vanilla extract after pudding thickens.",
+      "In a serving bowl, alternate vanilla wafers, bananas, and pudding."
+    ]
+  },
+  {
+    "id": "miami-vice",
+    "category": "cocktails",
+    "title": "Miami Vice",
+    "from": "Lava Flow",
+    "prep": "15 minutes",
+    "image": "media/miami-vice.jpg",
+    "fact": "I first enjoyed this drink on a Caribbean cruise we went on with Carl & Dusty in the summer of 2019. In December of 2020 we went to Hawaii for Christmas with the family and this drink was known as a Lava Flow.",
+    "ingredients": [
+      "2 jiggers or 10 ounces Malibu",
+      "16 ounces Piña Colada mix (Master of Mixers)",
+      "16 ounces strawberry daiquiri mix (Master of Mixers)",
+      "3 scoops crushed ice",
+      "Blender",
+      "Mixing glass"
+    ],
+    "steps": [
+      "Add ice in the blender.",
+      "Pour 5 ounces Malibu over ice.",
+      "Add Piña Colada mix and blend for 30 seconds. Pour mixing glasses half full and set aside.",
+      "Prepare daiquiri drink using steps 1–3 with strawberry daiquiri mix in place of piña colada mix.",
+      "Pour strawberry daiquiri drink over piña colada drink in half-filled glasses.",
+      "Garnish with pineapple wedge."
+    ]
+  },
+  {
+    "id": "frozen-margarita",
+    "category": "cocktails",
+    "title": "Frozen Margarita",
+    "from": "Cheri Marino",
+    "prep": "10 minutes",
+    "image": "media/frozen-margarita.jpg",
+    "fact": "My favorite frozen margaritas are made at Los Barrios Restaurant here in San Antonio. When making them at home, Cheri Marino uses this recipe most like Los Barrios frozen margaritas.",
+    "ingredients": [
+      "6 ounces tequila",
+      "1 ounce Grand Marnier",
+      "1 (12-ounce) can frozen lime juice",
+      "3 scoops crushed ice",
+      "Blender"
+    ],
+    "steps": [
+      "Add ice to blender.",
+      "Pour frozen lime juice over ice in blender. Add 6 ounces tequila and blend for 30 seconds or desired consistency.",
+      "Pour into drinking glasses and top with 1 ounce Grand Marnier.",
+      "Garnish with lime slice."
+    ]
+  }
+];
+
+    const FAV_KEY = "marino-favs-v1";
+    const state = {
+      view: "home",
+      category: null,
+      recipeId: null,
+      query: "",
+      favOnly: false,
+      favorites: new Set(JSON.parse(localStorage.getItem(FAV_KEY) || "[]"))
+    };
+
+    const $ = (sel, el = document) => el.querySelector(sel);
+    const $$ = (sel, el = document) => [...el.querySelectorAll(sel)];
+
+    function catById(id) { return CATEGORIES.find(c => c.id === id); }
+    function saveFavs() { localStorage.setItem(FAV_KEY, JSON.stringify([...state.favorites])); }
+
+    function toggleFav(id, ev) {
+      if (ev) ev.stopPropagation();
+      if (state.favorites.has(id)) state.favorites.delete(id);
+      else state.favorites.add(id);
+      saveFavs();
+      render();
+    }
+
+    function filteredRecipes() {
+      const q = state.query.trim().toLowerCase();
+      return RECIPES.filter(r => {
+        if (state.favOnly && !state.favorites.has(r.id)) return false;
+        if (state.category && r.category !== state.category) return false;
+        if (!q) return true;
+        const hay = [r.title, r.from, r.fact || "", ...(r.ingredients || []), ...(r.steps || []), r.notes || ""].join(" ").toLowerCase();
+        return hay.includes(q);
+      });
+    }
+
+    function escapeHtml(s) {
+      return String(s)
+        .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+    }
+
+    function recipeCard(r) {
+      const cat = catById(r.category);
+      const on = state.favorites.has(r.id);
+      return `
+        <article class="recipe-card" role="button" tabindex="0" data-open="${r.id}">
+          <button class="heart ${on ? "on" : ""}" type="button" aria-label="${on ? "Remove from saved" : "Save recipe"}" data-fav="${r.id}">♥</button>
+          <div class="thumb"><img src="${escapeHtml(r.image)}" alt="" loading="lazy" /></div>
+          <div class="body">
+            <div class="cat-tag">${cat?.short || ""}</div>
+            <h3>${escapeHtml(r.title)}</h3>
+            <div class="meta">From ${escapeHtml(r.from)}${r.prep ? ` · ${escapeHtml(r.prep)}` : ""}</div>
+          </div>
+        </article>`;
+    }
+
+    function renderHome() {
+      const featured = ["spaghetti-meatballs", "street-tacos", "banana-bread", "frozen-margarita", "biscotti", "chicken-fricassee"]
+        .map(id => RECIPES.find(r => r.id === id)).filter(Boolean);
+      const list = state.query || state.favOnly ? filteredRecipes() : featured;
+      const heading = state.favOnly
+        ? { title: "Saved recipes", sub: "Your kitchen shortlist" }
+        : state.query
+          ? { title: "Search results", sub: `${filteredRecipes().length} match${filteredRecipes().length === 1 ? "" : "es"}` }
+          : { title: "Family favorites", sub: "Start with a classic from the collection" };
+
+      $("#view-home").innerHTML = `
+        ${!state.query && !state.favOnly ? `
+        <section class="hero" aria-label="Marino Family Recipes">
+          <div class="hero-media"><img src="media/cover.jpg" alt="Marino family recipe collection" /></div>
+          <div class="hero-inner">
+            <div class="hero-year">Collection · 2021</div>
+            <h1>Marino<em>Family Recipes</em></h1>
+            <p>Treasured dishes passed across tables, kitchens, and generations.</p>
+            <div class="hero-actions">
+              <button class="btn btn-primary" type="button" data-nav="browse">Browse the book</button>
+              <button class="btn btn-ghost" type="button" data-open="spaghetti-meatballs">Open Sunday sauce</button>
+            </div>
+          </div>
+        </section>
+        <div class="section-head">
+          <div>
+            <h2>Chapters</h2>
+            <p>Six sections from breakfast through cocktails</p>
+          </div>
+        </div>
+        <div class="cat-rail" role="list">
+          ${CATEGORIES.map(c => {
+            const count = RECIPES.filter(r => r.category === c.id).length;
+            return `<button class="cat-chip" type="button" role="listitem" data-cat="${c.id}">
+              <img src="${escapeHtml(c.image)}" alt="" loading="lazy" />
+              <div class="cat-copy">
+                <strong>${escapeHtml(c.name)}</strong>
+                <span>${count} recipes · ${escapeHtml(c.blurb)}</span>
+              </div>
+            </button>`;
+          }).join("")}
+        </div>` : ""}
+        <div class="section-head">
+          <div>
+            <h2>${escapeHtml(heading.title)}</h2>
+            <p>${escapeHtml(heading.sub)}</p>
+          </div>
+        </div>
+        <div class="recipe-grid">
+          ${list.length ? list.map(recipeCard).join("") : `<div class="empty">No recipes match. Try another search.</div>`}
+        </div>
+        ${!state.query && !state.favOnly ? `
+        <div class="section-head" style="margin-top:2.5rem">
+          <div>
+            <h2>All ${RECIPES.length} recipes</h2>
+            <p>Every page from the Marino Family Recipe Collection</p>
+          </div>
+        </div>
+        <div class="recipe-grid">${RECIPES.map(recipeCard).join("")}</div>` : ""}
+      `;
+    }
+
+    function renderBrowse() {
+      const recipes = filteredRecipes();
+      const cat = state.category ? catById(state.category) : null;
+      $("#view-browse").innerHTML = `
+        <div class="section-head" style="margin-top:1.25rem">
+          <div>
+            <h2>${escapeHtml(cat ? cat.name : "Browse recipes")}</h2>
+            <p>${escapeHtml(cat ? cat.blurb : `${RECIPES.length} recipes across six chapters`)}</p>
+          </div>
+          ${state.category ? `<button class="btn" type="button" data-cat="" style="border:1px solid var(--line);border-radius:999px;padding:.55rem 1rem;background:#fff">All chapters</button>` : ""}
+        </div>
+        <div class="cat-rail" role="list">
+          ${CATEGORIES.map(c => {
+            const active = state.category === c.id;
+            const count = RECIPES.filter(r => r.category === c.id).length;
+            return `<button class="cat-chip" type="button" role="listitem" data-cat="${c.id}" style="${active ? "outline:2px solid var(--gold);outline-offset:2px" : ""}">
+              <img src="${escapeHtml(c.image)}" alt="" loading="lazy" />
+              <div class="cat-copy">
+                <strong>${escapeHtml(c.short)}</strong>
+                <span>${count} recipes</span>
+              </div>
+            </button>`;
+          }).join("")}
+        </div>
+        <div class="recipe-grid">
+          ${recipes.length ? recipes.map(recipeCard).join("") : `<div class="empty">No recipes in this view.</div>`}
+        </div>
+      `;
+    }
+
+    function renderRecipe() {
+      const r = RECIPES.find(x => x.id === state.recipeId);
+      if (!r) { state.view = "home"; render(); return; }
+      const cat = catById(r.category);
+      const on = state.favorites.has(r.id);
+      const timing = [r.prep && `Prep ${r.prep}`, r.cook && `Cook ${r.cook}`, r.serves && `Serves ${r.serves}`].filter(Boolean);
+
+      $("#view-recipe").innerHTML = `
+        <button class="detail-back" type="button" data-back>← Back</button>
+        <header class="detail-hero">
+          <img src="${escapeHtml(r.image)}" alt="${escapeHtml(r.title)}" />
+          <div class="content">
+            <div class="cat-tag">${escapeHtml(cat?.name || "")}</div>
+            <h1>${escapeHtml(r.title)}</h1>
+            <div class="from">Recipe from ${escapeHtml(r.from)}</div>
+            ${timing.length ? `<div class="timing">${timing.map(t => `<span>${escapeHtml(t)}</span>`).join("")}</div>` : ""}
+            <div class="detail-actions">
+              <button class="btn ${on ? "on" : ""}" type="button" data-fav="${r.id}">${on ? "Saved ♥" : "Save recipe"}</button>
+              <button class="btn" type="button" onclick="window.print()">Print</button>
+            </div>
+          </div>
+        </header>
+        ${r.fact ? `<aside class="fact"><strong>Fun fact</strong>${escapeHtml(r.fact)}</aside>` : ""}
+        <div class="detail-layout">
+          <section class="panel">
+            <h2>Ingredients</h2>
+            <ul class="ingredients">
+              ${r.ingredients.map((ing, i) => `
+                <li>
+                  <input type="checkbox" id="ing-${i}" />
+                  <label for="ing-${i}">${escapeHtml(ing)}</label>
+                </li>`).join("")}
+            </ul>
+          </section>
+          <section class="panel">
+            <h2>Directions</h2>
+            <ol class="steps">
+              ${r.steps.map(s => `<li>${escapeHtml(s)}</li>`).join("")}
+            </ol>
+            ${r.notes ? `<div class="note"><strong>Cook’s note.</strong> ${escapeHtml(r.notes)}</div>` : ""}
+          </section>
+        </div>
+      `;
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    function setView(view) {
+      state.view = view;
+      $$(".view").forEach(v => v.classList.toggle("active", v.id === `view-${view}`));
+      $$(".bottom-nav button").forEach(b => {
+        const nav = b.dataset.nav;
+        const active =
+          (nav === "home" && view === "home" && !state.favOnly) ||
+          (nav === "browse" && view === "browse") ||
+          (nav === "favorites" && state.favOnly && view === "home");
+        b.classList.toggle("active", active);
+      });
+    }
+
+    function render() {
+      $("#favFilter").setAttribute("aria-pressed", state.favOnly ? "true" : "false");
+      if (state.view === "home") renderHome();
+      else if (state.view === "browse") renderBrowse();
+      else if (state.view === "recipe") renderRecipe();
+      setView(state.view);
+      bindDynamic();
+    }
+
+    function openRecipe(id) {
+      state.recipeId = id;
+      state.view = "recipe";
+      render();
+      history.pushState({ view: "recipe", id }, "", `#recipe/${id}`);
+    }
+
+    function goHome() {
+      state.view = "home";
+      state.category = null;
+      state.recipeId = null;
+      if (!state.favOnly) history.pushState({ view: "home" }, "", "#");
+      render();
+    }
+
+    function goBrowse(catId = null) {
+      state.view = "browse";
+      state.category = catId || null;
+      state.favOnly = false;
+      state.recipeId = null;
+      history.pushState({ view: "browse", category: state.category }, "", state.category ? `#browse/${state.category}` : "#browse");
+      render();
+    }
+
+    function bindDynamic() {
+      $$("[data-open]").forEach(el => {
+        const open = () => openRecipe(el.dataset.open);
+        el.addEventListener("click", open);
+        el.addEventListener("keydown", e => {
+          if (e.key === "Enter" || e.key === " ") { e.preventDefault(); open(); }
+        });
+      });
+      $$("[data-fav]").forEach(el => el.addEventListener("click", e => toggleFav(el.dataset.fav, e)));
+      $$("[data-cat]").forEach(el => el.addEventListener("click", () => goBrowse(el.dataset.cat || null)));
+      $$("[data-nav]").forEach(el => el.addEventListener("click", () => {
+        const nav = el.dataset.nav;
+        if (nav === "home") {
+          state.favOnly = false; state.query = ""; $("#search").value = ""; goHome();
+        } else if (nav === "browse") goBrowse(null);
+        else if (nav === "favorites") {
+          state.favOnly = true; state.query = ""; $("#search").value = "";
+          state.view = "home"; history.pushState({ view: "favorites" }, "", "#saved"); render();
+        }
+      }));
+      const back = $("[data-back]");
+      if (back) back.addEventListener("click", () => {
+        if (history.length > 1) history.back();
+        else goBrowse(state.category);
+      });
+    }
+
+    $("#search").addEventListener("input", e => {
+      state.query = e.target.value;
+      if (state.view === "recipe") state.view = state.category ? "browse" : "home";
+      render();
+    });
+    $("#favFilter").addEventListener("click", () => {
+      state.favOnly = !state.favOnly;
+      if (state.view === "recipe") state.view = "home";
+      render();
+    });
+    $("#brandHome").addEventListener("click", () => {
+      state.favOnly = false; state.query = ""; $("#search").value = ""; goHome();
+    });
+    window.addEventListener("scroll", () => {
+      $("#topbar").classList.toggle("scrolled", window.scrollY > 8);
+    }, { passive: true });
+    window.addEventListener("popstate", () => routeFromHash());
+
+    function routeFromHash() {
+      const hash = location.hash.replace(/^#/, "");
+      if (hash.startsWith("recipe/")) {
+        state.recipeId = hash.slice(7); state.view = "recipe"; state.favOnly = false;
+      } else if (hash.startsWith("browse/")) {
+        state.category = hash.slice(7) || null; state.view = "browse"; state.favOnly = false;
+      } else if (hash === "browse") {
+        state.category = null; state.view = "browse"; state.favOnly = false;
+      } else if (hash === "saved") {
+        state.favOnly = true; state.view = "home";
+      } else {
+        state.view = "home"; state.category = null; state.favOnly = false;
+      }
+      render();
+    }
+
+    routeFromHash();
+
+    // PWA install + service worker
+    let deferredPrompt = null;
+    const installBtn = document.getElementById("installBtn");
+    window.addEventListener("beforeinstallprompt", (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+      installBtn.classList.add("show");
+    });
+    installBtn.addEventListener("click", async () => {
+      if (deferredPrompt) {
+        deferredPrompt.prompt();
+        await deferredPrompt.userChoice;
+        deferredPrompt = null;
+        installBtn.classList.remove("show");
+        return;
+      }
+      // iOS / browsers without beforeinstallprompt
+      const isiOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
+      alert(isiOS
+        ? "To install: tap Share, then “Add to Home Screen”."
+        : "To install: open your browser menu and choose “Install app” or “Add to Home Screen”.");
+    });
+    window.addEventListener("appinstalled", () => {
+      deferredPrompt = null;
+      installBtn.classList.remove("show");
+    });
+    // Show Install on iOS as guidance even without beforeinstallprompt
+    if (/iphone|ipad|ipod/i.test(navigator.userAgent) && !window.navigator.standalone) {
+      installBtn.classList.add("show");
+    }
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", () => {
+        navigator.serviceWorker.register("./sw.js").catch(() => {});
+      });
+    }
+  </script>
+</body>
+</html>

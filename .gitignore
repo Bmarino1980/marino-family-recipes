@@ -1,0 +1,13 @@
+node_modules/
+package-lock.json
+*.docx
+*.doc
+Marino Family Recipe Collection Draft 2.md
+_docx_extract/
+_temp*
+media/stock-temp/
+media/*-family.jpg
+icons/icon-source.jpg
+.DS_Store
+Thumbs.db
+*.log
